@@ -110,26 +110,76 @@ body {
     width: 100%;
     padding: 15px;
     font-size: 16px;
-    border: 2px solid #D7CCC8;
+    border: 2px solid transparent;
     border-radius: 8px;
     cursor: pointer;
     text-align: center;
     transition: all 0.3s ease;
-    background: linear-gradient(45deg, #8b7169, #996f61);
-    color: #242424;
+    color: white;
     font-weight: 500;
 }
 
-.hall-btn:hover {
-    background: linear-gradient(45deg, #7c5f56, #885d4f);
-    border-color: transparent;
-    color: white;
-    box-shadow: 0 4px 8px rgba(93, 64, 55, 0.2);
+/* צבעים ייחודיים לכל אולם */
+.hall-btn[data-hall="אולם-כלנית"] {
+    background: linear-gradient(45deg, #2c3e50, #34495e);
+    box-shadow: 0 4px 8px rgba(44, 62, 80, 0.2);
 }
 
+.hall-btn[data-hall="אולם-רקפת"] {
+    background: linear-gradient(45deg, #16a085, #1abc9c);
+    box-shadow: 0 4px 8px rgba(22, 160, 133, 0.2);
+}
+
+.hall-btn[data-hall="אולם-אירוסים"] {
+    background: linear-gradient(45deg, #8e44ad, #9b59b6);
+    box-shadow: 0 4px 8px rgba(142, 68, 173, 0.2);
+}
+
+.hall-btn[data-hall="אולם-סחלב"] {
+    background: linear-gradient(45deg, #c0392b, #e74c3c);
+    box-shadow: 0 4px 8px rgba(192, 57, 43, 0.2);
+}
+
+.hall-btn[data-hall="אולם-נרקיס"] {
+    background: linear-gradient(45deg, #2980b9, #3498db);
+    box-shadow: 0 4px 8px rgba(41, 128, 185, 0.2);
+}
+
+/* אפקט hover לכפתורים */
+.hall-btn[data-hall="אולם-כלנית"]:hover {
+    background: linear-gradient(45deg, #34495e, #2c3e50);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(44, 62, 80, 0.3);
+}
+
+.hall-btn[data-hall="אולם-רקפת"]:hover {
+    background: linear-gradient(45deg, #1abc9c, #16a085);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(22, 160, 133, 0.3);
+}
+
+.hall-btn[data-hall="אולם-אירוסים"]:hover {
+    background: linear-gradient(45deg, #9b59b6, #8e44ad);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(142, 68, 173, 0.3);
+}
+
+.hall-btn[data-hall="אולם-סחלב"]:hover {
+    background: linear-gradient(45deg, #e74c3c, #c0392b);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(192, 57, 43, 0.3);
+}
+
+.hall-btn[data-hall="אולם-נרקיס"]:hover {
+    background: linear-gradient(45deg, #3498db, #2980b9);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(41, 128, 185, 0.3);
+}
+
+/* אפקט active לכפתורים */
 .hall-btn:active {
     transform: translateY(1px);
-    box-shadow: 0 2px 4px rgba(93, 64, 55, 0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .login-page {
@@ -571,4 +621,20 @@ body {
     .icon-btn {
         font-size: 14px;
     }
+}
+
+.main-footer {
+    text-align: center;
+    padding: 20px;
+    color: #5D4037;
+    font-size: 14px;
+    margin-top: auto;
+    background-color: rgba(255, 255, 255, 0.9);
+    border-top: 1px solid rgba(93, 64, 55, 0.1);
+}
+
+.main-footer p {
+    margin: 0;
+    opacity: 0.8;
+    font-weight: 500;
 } 
