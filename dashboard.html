@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ארמונות חן</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <header class="main-header">
+            <div class="header-left">
+                <div class="user-section">
+                    <i class="fas fa-user"></i>
+                    <span id="userInfo"></span>
+                </div>
+            </div>
+
+            <div class="header-center">
+                <img src="images/logo/logo.png" alt="Chen Palaces Logo" class="logo">
+            </div>
+
+            <div class="header-right">
+                <button id="logoutBtn" class="icon-btn">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
+            </div>
+        </header>
+
+        <main class="halls-grid">
+            <h1>בחר אולם</h1>
+            <div class="halls-buttons">
+                <button class="hall-btn" data-hall="אולם-כלנית">אולם כלנית</button>
+                <button class="hall-btn" data-hall="אולם-רקפת">אולם רקפת</button>
+                <button class="hall-btn" data-hall="אולם-אירוסים">אולם אירוסים</button>
+                <button class="hall-btn" data-hall="אולם-סחלב">אולם סחלב</button>
+                <button class="hall-btn" data-hall="אולם-נרקיס">אולם נרקיס</button>
+            </div>
+        </main>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <script src="js/firebase-config.js"></script>
+    <script src="js/dashboard.js"></script>
+</body>
+</html> 

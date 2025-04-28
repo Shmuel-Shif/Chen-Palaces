@@ -1,0 +1,574 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: #F5F5F5;
+    direction: rtl;
+    background-image: 
+        linear-gradient(45deg, #D7CCC8 25%, transparent 25%),
+        linear-gradient(-45deg, #D7CCC8 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, #D7CCC8 75%),
+        linear-gradient(-45deg, transparent 75%, #D7CCC8 75%);
+    background-size: 60px 60px;
+    background-position: 0 0, 0 30px, 30px -30px, -30px 0px;
+    margin: 0;
+    min-height: 100vh;
+}
+
+.dashboard-container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    padding-top: 80px;
+    background-color: rgba(238, 238, 238, 0.75);
+    box-shadow: 0 0 20px rgba(93, 64, 55, 0.1);
+    margin: 0;
+}
+
+.main-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 30px;
+    background: #FFFFFF;
+    box-shadow: 0 2px 8px rgba(93, 64, 55, 0.1);
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    border-radius: 0;
+}
+
+.header-left, .header-center, .header-right {
+    flex: 1;
+    display: flex;
+    align-items: center;
+}
+
+.header-left {
+    justify-content: flex-start;
+}
+
+.header-center {
+    justify-content: center;
+}
+
+.header-right {
+    justify-content: flex-end;
+}
+
+.logo {
+    height: 50px;
+}
+
+#userInfo {
+    display: inline-block;
+    font-weight: 500;
+    color: #5D4037;
+    font-size: 16px;
+    margin-right: 5px;
+}
+
+#logoutBtn {
+    padding: 8px 20px;
+    color: rgb(58, 58, 58);
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    width: auto;
+}
+
+.halls-grid {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.halls-grid h1 {
+    margin-bottom: 50px;
+    color: #4E342E;
+    font-size: 24px;
+}
+
+.halls-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+    max-width: 300px;
+}
+
+.hall-btn {
+    width: 100%;
+    padding: 15px;
+    font-size: 16px;
+    border: 2px solid #D7CCC8;
+    border-radius: 8px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.3s ease;
+    background: linear-gradient(45deg, #8b7169, #996f61);
+    color: #242424;
+    font-weight: 500;
+}
+
+.hall-btn:hover {
+    background: linear-gradient(45deg, #7c5f56, #885d4f);
+    border-color: transparent;
+    color: white;
+    box-shadow: 0 4px 8px rgba(93, 64, 55, 0.2);
+}
+
+.hall-btn:active {
+    transform: translateY(1px);
+    box-shadow: 0 2px 4px rgba(93, 64, 55, 0.1);
+}
+
+.login-page {
+    min-height: 100vh;
+    background-color: #3E2723;
+    background-image: 
+        linear-gradient(30deg, rgba(93, 64, 55, 0.3) 12%, transparent 12.5%, transparent 87%, rgba(93, 64, 55, 0.3) 87.5%, rgba(93, 64, 55, 0.3)),
+        linear-gradient(150deg, rgba(93, 64, 55, 0.3) 12%, transparent 12.5%, transparent 87%, rgba(93, 64, 55, 0.3) 87.5%, rgba(93, 64, 55, 0.3)),
+        linear-gradient(30deg, rgba(93, 64, 55, 0.3) 12%, transparent 12.5%, transparent 87%, rgba(93, 64, 55, 0.3) 87.5%, rgba(93, 64, 55, 0.3)),
+        linear-gradient(150deg, rgba(93, 64, 55, 0.3) 12%, transparent 12.5%, transparent 87%, rgba(93, 64, 55, 0.3) 87.5%, rgba(93, 64, 55, 0.3));
+    background-size: 160px 280px;
+    background-position: 0 0, 0 0, 80px 140px, 80px 140px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.login-container {
+    background: rgba(255, 255, 255, 0.97);
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+    width: 100%;
+    max-width: 450px;
+    margin: 10px;
+}
+
+.login-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.login-logo {
+    width: 180px;
+    margin-bottom: 15px;
+}
+
+.login-header h1 {
+    color: #4E342E;
+    font-size: 22px;
+    margin-bottom: 8px;
+}
+
+.login-subtitle {
+    color: #795548;
+    font-size: 14px;
+}
+
+.login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 5px;
+}
+
+.form-group label {
+    color: #5D4037;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+}
+
+.form-group label i {
+    color: #795548;
+    font-size: 16px;
+}
+
+.form-group input {
+    padding: 14px 16px;
+    border: 2px solid #E0E0E0;
+    border-radius: 10px;
+    font-size: 15px;
+    transition: all 0.3s ease;
+    background: #FFFFFF;
+    color: #424242;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.form-group input:hover {
+    border-color: #BDBDBD;
+}
+
+.form-group input:focus {
+    border-color: #795548;
+    box-shadow: 0 0 0 3px rgba(121, 85, 72, 0.1);
+    outline: none;
+}
+
+.form-group input::placeholder {
+    color: #9E9E9E;
+}
+
+.error-message {
+    color: #C62828;
+    font-size: 14px;
+    text-align: center;
+    min-height: 20px;
+    margin-top: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    font-weight: 500;
+}
+
+.error-message:not(:empty)::before {
+    content: '\f071';
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 900;
+    font-size: 14px;
+}
+
+.login-btn {
+    background: linear-gradient(45deg, #5D4037, #795548);
+    color: white;
+    border: none;
+    padding: 16px;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-top: 10px;
+}
+
+.login-btn:hover {
+    background: linear-gradient(45deg, #4E342E, #6D4C41);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.login-btn:active {
+    transform: translateY(1px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.login-btn i {
+    font-size: 18px;
+}
+
+.halls-section {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.hall {
+    margin-bottom: 30px;
+}
+
+.event {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    border: 1px solid #ddd;
+    margin: 10px 0;
+    border-radius: 5px;
+}
+
+.assign-btn {
+    padding: 8px 15px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.assign-btn.assigned {
+    background-color: #666;
+    cursor: not-allowed;
+}
+
+.user-stats {
+    display: flex;
+    gap: 15px;
+    font-size: 0.9em;
+    color: #666;
+}
+
+.main-nav {
+    display: flex;
+    gap: 30px;
+}
+
+.main-nav a {
+    color: #333;
+    text-decoration: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
+
+.main-nav a.active {
+    color: #4CAF50;
+    font-weight: bold;
+}
+
+.main-nav a:hover {
+    background-color: #f5f5f5;
+}
+
+.notifications {
+    position: relative;
+    cursor: pointer;
+}
+
+.notification-badge {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: #f44336;
+    color: white;
+    border-radius: 50%;
+    padding: 2px 6px;
+    font-size: 0.8em;
+}
+
+.logout-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background-color: #f44336;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1em;
+    width: auto;
+}
+
+.logout-btn i {
+    font-size: 1.1em;
+}
+
+.icon-btn {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    width: auto;
+    color: #795548;
+    font-size: 18px;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.icon-btn:hover {
+    color: #4E342E;
+    transform: scale(1.1);
+}
+
+.icon-btn:focus {
+    outline: none;
+}
+
+.user-section {
+    display: flex;
+    align-items: center;
+    color: #5D4037;
+    background-color: rgba(121, 85, 72, 0.1);
+    padding: 8px 15px;
+    border-radius: 4px;
+}
+
+.user-section i {
+    font-size: 16px;
+    color: #795548;
+}
+
+/* התאמות למסך קטן */
+@media screen and (max-width: 480px) {
+    .login-container {
+        padding: 20px;
+        margin: 10px;
+    }
+
+    .login-logo {
+        width: 150px;
+    }
+
+    .login-header {
+        margin-bottom: 25px;
+    }
+
+    .login-header h1 {
+        font-size: 20px;
+    }
+
+    .login-subtitle {
+        font-size: 13px;
+    }
+
+    .form-group {
+        gap: 8px;
+    }
+
+    .form-group label {
+        font-size: 13px;
+    }
+
+    .form-group input {
+        padding: 12px 14px;
+        font-size: 14px;
+    }
+
+    .login-btn {
+        padding: 14px;
+        font-size: 15px;
+    }
+}
+
+/* התאמות למסך קטן מאוד */
+@media screen and (max-width: 360px) {
+    .login-container {
+        padding: 15px;
+    }
+
+    .login-logo {
+        width: 120px;
+    }
+
+    .login-header h1 {
+        font-size: 18px;
+    }
+
+    .form-group input {
+        padding: 10px 12px;
+    }
+
+    .login-btn {
+        padding: 12px;
+        font-size: 14px;
+    }
+}
+
+/* התאמות לגובה נמוך */
+@media screen and (max-height: 600px) {
+    .login-container {
+        margin: 5px;
+    }
+
+    .login-header {
+        margin-bottom: 20px;
+    }
+
+    .login-logo {
+        width: 100px;
+        margin-bottom: 10px;
+    }
+
+    .form-group {
+        margin-bottom: 3px;
+    }
+}
+
+/* התאמות להדר במובייל */
+@media screen and (max-width: 768px) {
+    .main-header {
+        padding: 10px 15px;
+    }
+
+    .header-center img {
+        height: 35px;  /* לוגו קטן יותר */
+        width: auto;
+    }
+
+    .user-section {
+        font-size: 14px;
+        padding: 6px 10px;
+        margin-left: 5px;
+    }
+
+    .icon-btn {
+        font-size: 16px;
+        padding: 5px;
+    }
+
+    .header-left, .header-right {
+        flex: 0 0 auto;  /* לא להתכווץ */
+    }
+
+    .header-center {
+        flex: 1;  /* לקחת את שאר המקום */
+        text-align: center;
+        margin: 0 10px;
+        margin-left: 52px;
+    }
+
+    #userInfo {
+        font-size: 14px;
+    }
+
+    .halls-buttons {
+        width: 65%;
+        align-items: center;
+    }
+
+    .hall-btn {
+        padding: 8px;
+        width: 75%;
+    }
+}
+
+/* התאמות להדר במסך קטן מאוד */
+@media screen and (max-width: 360px) {
+    .main-header {
+        padding: 8px 10px;
+    }
+
+    .header-center img {
+        height: 30px;
+    }
+
+    .user-section {
+        font-size: 12px;
+        padding: 4px 8px;
+    }
+
+    .icon-btn {
+        font-size: 14px;
+    }
+} 
