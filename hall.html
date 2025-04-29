@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ארמונות חן</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="schedule-container">
+        <header class="main-header">
+            <div class="header-left">
+                <div class="user-section">
+                    <i class="fas fa-user"></i>
+                    <span id="userInfo"></span>
+                </div>
+            </div>
+
+            <div class="header-center">
+                <img src="images/logo/logo.png" alt="Chen Palaces Logo" class="logo">
+            </div>
+
+            <div class="header-right">
+                <button id="logoutBtn" class="icon-btn">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
+            </div>
+        </header>
+
+        <main class="schedule-grid">
+            <h1 id="hallTitle">
+                <button id="backBtn" class="icon-btn">
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+                שיבוץ שבועי - <span id="hallName"></span>
+            </h1>
+            
+            <div class="table-container">
+                <table class="schedule-table">
+                    <thead>
+                        <tr>
+                            <th>
+                                <div class="day-header">
+                                    <div class="day-name">ראשון</div>
+                                    <div class="date" id="date-0"></div>
+                                </div>
+                            </th>
+                            <th>
+                                <div class="day-header">
+                                    <div class="day-name">שני</div>
+                                    <div class="date" id="date-1"></div>
+                                </div>
+                            </th>
+                            <th>
+                                <div class="day-header">
+                                    <div class="day-name">שלישי</div>
+                                    <div class="date" id="date-2"></div>
+                                </div>
+                            </th>
+                            <th>
+                                <div class="day-header">
+                                    <div class="day-name">רביעי</div>
+                                    <div class="date" id="date-3"></div>
+                                </div>
+                            </th>
+                            <th>
+                                <div class="day-header">
+                                    <div class="day-name">חמישי</div>
+                                    <div class="date" id="date-4"></div>
+                                </div>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <div class="waiters-list"></div>
+                                <button class="assign-btn">שבץ אותי</button>
+                                <div class="error-message"></div>
+                            </td>
+                            <td>
+                                <div class="waiters-list"></div>
+                                <button class="assign-btn">שבץ אותי</button>
+                                <div class="error-message"></div>
+                            </td>
+                            <td>
+                                <div class="waiters-list"></div>
+                                <button class="assign-btn">שבץ אותי</button>
+                                <div class="error-message"></div>
+                            </td>
+                            <td>
+                                <div class="waiters-list"></div>
+                                <button class="assign-btn">שבץ אותי</button>
+                                <div class="error-message"></div>
+                            </td>
+                            <td>
+                                <div class="waiters-list"></div>
+                                <button class="assign-btn">שבץ אותי</button>
+                                <div class="error-message"></div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+
+        <footer class="main-footer">
+            <p>© 2025 ארמונות חן, שמואל שיף | 058-7701009</p>
+        </footer>
+    </div>
+
+    <!-- מודל הצלחה -->
+    <div class="modal-overlay" id="modalOverlay"></div>
+    <div class="success-modal" id="successModal">
+        <i class="fas fa-check-circle modal-icon"></i>
+        <h2>השיבוץ בוצע בהצלחה!</h2>
+        <p>נרשמת בהצלחה למשמרת</p>
+        <button class="modal-close-btn" onclick="closeModal()">
+            <i class="fas fa-times"></i>
+            סגור
+        </button>
+    </div>
+
+    <!-- הוסף את זה לפני סגירת תג body -->
+    <div class="modal-overlay" id="limitsModalOverlay"></div>
+    <div class="limits-modal" id="limitsModal">
+        <h2>הגדרת מספר מלצרים</h2>
+        <h3 id="limitsDayName"></h3>
+        
+        <div class="limits-inputs">
+            <div class="limit-input">
+                <label>
+                    <i class="fas fa-mars"></i>
+                    מספר מלצרים:
+                </label>
+                <input type="number" id="maleLimitInput" min="1" max="30">
+            </div>
+            
+            <div class="limit-input">
+                <label>
+                    <i class="fas fa-venus"></i>
+                    מספר מלצריות:
+                </label>
+                <input type="number" id="femaleLimitInput" min="1" max="30">
+            </div>
+        </div>
+
+        <div class="modal-buttons">
+            <button id="saveLimitsBtn" class="submit-btn">
+                <i class="fas fa-save"></i>
+                שמור
+            </button>
+            <button id="cancelLimitsBtn" class="cancel-btn">
+                <i class="fas fa-times"></i>
+                ביטול
+            </button>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <script src="js/firebase-config.js"></script>
+    <script src="js/hall.js"></script>
+</body>
+</html> 

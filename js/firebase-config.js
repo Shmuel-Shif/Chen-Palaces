@@ -11,48 +11,8 @@ const firebaseConfig = {
 
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
 const database = firebase.database();
 
-// הוספת נתונים ראשוניים רק אם הם לא קיימים
+// רפרנסים לדאטהבייס
 const waitersRef = database.ref('waiters');
-waitersRef.once('value').then((snapshot) => {
-    if (!snapshot.exists()) {
-        waitersRef.set({
-            'w1': {
-                id: 'w1',
-                name: 'משה כהן',
-                password: '1234'
-            },
-            'w2': {
-                id: 'w2',
-                name: 'יוסי לוי',
-                password: 'abcd'
-            }
-        });
-    }
-});
-
-const eventsRef = database.ref('events');
-eventsRef.once('value').then((snapshot) => {
-    if (!snapshot.exists()) {
-        eventsRef.set({
-            'hall1': {
-                '2025-04-27': {
-                    eventName: 'אירוע חתונה',
-                    waiters: ['w1', 'w2']
-                },
-                '2025-04-28': {
-                    eventName: 'בר מצווה',
-                    waiters: ['w2']
-                }
-            },
-            'hall2': {
-                '2025-04-27': {
-                    eventName: 'אירוע עסקי',
-                    waiters: []
-                }
-            }
-        });
-    }
-}); 
+const shiftsRef = database.ref('shifts'); 

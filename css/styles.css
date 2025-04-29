@@ -90,10 +90,11 @@ body {
     justify-content: center;
     align-items: center;
     padding: 20px;
+    padding-top: 0;
 }
 
 .halls-grid h1 {
-    margin-bottom: 50px;
+    margin-bottom: 25px;
     color: #4E342E;
     font-size: 24px;
 }
@@ -356,12 +357,18 @@ body {
 }
 
 .assign-btn {
-    padding: 8px 15px;
-    background-color: #4CAF50;
-    color: white;
+    width: 100%;
+    padding: 8px;
+    margin: 0;
     border: none;
-    border-radius: 5px;
+    background: #8D6E63;
+    color: white;
     cursor: pointer;
+    transition: all 0.3s ease;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+    font-weight: 500;
+    display: block;
 }
 
 .assign-btn.assigned {
@@ -471,9 +478,17 @@ body {
 
 /* התאמות למסך קטן */
 @media screen and (max-width: 480px) {
+    .login-page {
+        padding: 0;  /* מסיר ריווח מהצדדים */
+        height: 100vh;
+    }
+    
     .login-container {
-        padding: 20px;
-        margin: 10px;
+        height: 100vh;  /* גובה מלא */
+        margin: 0;  /* מסיר מרווחים */
+        border-radius: 0;  /* מסיר עיגול בפינות */
+        box-shadow: none;  /* מסיר צל */
+        padding: 20px;  /* מקטין ריווח פנימי */
     }
 
     .login-logo {
@@ -599,27 +614,81 @@ body {
 
     .hall-btn {
         padding: 8px;
-        width: 75%;
+        width: 85%;
+        font-size: 14px;
+    }
+
+    .schedule-table thead {
+        display: none;  /* מסתיר את הכותרת המקורית */
+    }
+
+    .schedule-table td {
+        display: block;
+        width: 100%;
+        height: auto;
+        padding: 0;
+        margin-bottom: 15px;
+        border-radius: 8px;
+        background: white;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        overflow: hidden;
+    }
+
+    .schedule-table td .day-header {
+        background: #795548;
+        color: white;
+        padding: 10px;
+        margin: 0;
+        text-align: center;
+        border-radius: 10px 10px 0 0;
+    }
+
+    .schedule-table td .day-name {
+        font-weight: 500;
+        font-size: 1.1em;
+        margin-bottom: 5px;
+        border-bottom: 2px solid rgba(255, 255, 255, 0.479);
+        padding-bottom: 5px;
+    }
+
+    .schedule-table td .date {
+        color: rgba(255, 255, 255, 0.692);
+        font-size: 0.85em;
+        padding-bottom: 5px;
+        font-weight: 500;
+    }
+
+    .waiters-list {
+        padding: 15px;
+        margin: 0;
+    }
+
+    .assign-btn {
+        width: calc(100% - 30px);
+        margin: 15px;
     }
 }
 
-/* התאמות להדר במסך קטן מאוד */
-@media screen and (max-width: 360px) {
-    .main-header {
-        padding: 8px 10px;
+/* התאמות נוספות למסכים קטנים במיוחד */
+@media screen and (max-height: 600px) {
+    .login-header {
+        margin-bottom: 15px;
     }
 
-    .header-center img {
-        height: 30px;
+    .login-logo {
+        width: 100px;
     }
 
-    .user-section {
-        font-size: 12px;
-        padding: 4px 8px;
+    .login-header h1 {
+        font-size: 18px;
     }
 
-    .icon-btn {
-        font-size: 14px;
+    .form-group {
+        margin-bottom: 8px;
+    }
+
+    .submit-btn {
+        margin: 10px 0;
     }
 }
 
@@ -637,4 +706,799 @@ body {
     margin: 0;
     opacity: 0.8;
     font-weight: 500;
+}
+
+.schedule-container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: rgba(238, 238, 238, 0.75);
+}
+
+.schedule-grid {
+    flex: 1;
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.schedule-grid h1 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #4E342E;
+    margin: 100px 0 30px 0;
+    position: relative; /* בשביל מיקום החץ */
+    width: 100%;
+    padding: 0 10px;
+    font-size: 1.8em;
+}
+
+/* עיצוב החץ */
+.schedule-grid h1 .icon-btn {
+    position: absolute;
+    right: 25px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 0.6em;
+    color: #795548;
+}
+
+.weekly-schedule {
+    display: grid;
+    gap: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+}
+
+.day-card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.day-card h2 {
+    color: #5D4037;
+    font-size: 1.2em;
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.day-card h2 .date {
+    font-size: 0.8em;
+    color: #795548;
+}
+
+.waiters-list {
+    padding: 15px;
+    margin: 0;
+    background: white;
+    display: block;
+}
+
+.waiter-item {
+    display: flex;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #EFEBE9;
+}
+
+.waiter-item:last-child {
+    border-bottom: none;
+}
+
+.waiter-item i {
+    margin-left: 8px;
+    color: #795548;
+}
+
+.assign-btn:hover {
+    background: linear-gradient(45deg, #4E342E, #6D4C41);
+}
+
+.assign-btn:disabled {
+    cursor: not-allowed;
+    background: #64da53;
+    cursor: not-allowed;
+    color: #000000;
+}
+
+.error-message {
+    color: #D32F2F;
+    font-size: 0.9em;
+    text-align: center;
+}
+
+/* התאמה למסך קטן */
+@media screen and (max-width: 768px) {
+    .weekly-schedule {
+        grid-template-columns: 1fr;
+    }
+    
+    .day-card {
+        margin-bottom: 15px;
+    }
+
+    .schedule-grid h1 {
+        font-size: 1.2em;
+        margin: 65px 0 30px 0;
+    }
+
+    .schedule-grid h1 .icon-btn {
+        right: 0px;
+        font-size: 0.9em;
+    }
+}
+
+.table-container {
+    background: white;
+    border-radius: 12px;
+    padding: 15px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    margin: 0 10px;
+    border: 1px solid #5D4037;
+}
+
+.schedule-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: center;
+    background: white;
+    font-size: 0.95em;
+    table-layout: fixed;
+}
+
+.schedule-table th {
+    width: 20%;
+    background: #795548;
+    color: white;
+    padding: 4px;
+    border: 1px solid #5D4037;
+}
+
+.day-header {
+    background: #795548;
+    color: white;
+    padding: 10px;
+    text-align: center;
+    border-radius: 8px 8px 0 0;
+}
+
+.day-name {
+    font-weight: 500;
+    font-size: 1.1em;
+    margin-bottom: 5px;
+}
+
+.date {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.85em;
+}
+
+.schedule-table td {
+    border: 1px solid #5D4037;    vertical-align: top;
+    height: 1000px;
+    background: none;
+}
+
+.waiters-list {
+    padding: 15px;
+    margin: 0;
+    background: white;
+}
+
+/* עיצוב סרגל הגלילה */
+.waiters-list::-webkit-scrollbar {
+    width: 5px;
+}
+
+.waiters-list::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+.waiters-list::-webkit-scrollbar-thumb {
+    background: #BCAAA4;
+    border-radius: 3px;
+}
+
+.waiters-list::-webkit-scrollbar-thumb:hover {
+    background: #8D6E63;
+}
+
+.waiter-tag {
+    background: rgba(121, 85, 72, 0.1);
+    color: #5D4037;
+    padding: 8px 12px;
+    border-radius: 4px;
+    margin: 4px 0;
+    width: 100%;
+    display: block;
+}
+
+.waiter-tag.male {
+    background: #2C3E50;
+    color: white;
+    border: 1px solid rgba(44, 62, 80, 0.1);
+}
+
+.waiter-tag.female {
+    background: #9B6B9D;
+    color: white;
+    border: 1px solid rgba(155, 107, 157, 0.1);
+}
+
+/* התאמה למובייל */
+@media screen and (max-width: 768px) {
+    .waiter-tag {
+        width: auto;
+        display: inline-block;
+    }
+}
+
+/* התאמות למסך קטן מאוד */
+@media screen and (max-width: 480px) {
+    .schedule-table td {
+        padding: 12px;
+    }
+
+    .date {
+        font-size: 0.85em;
+    }
+
+    .waiter-tag {
+        font-size: 0.9em;
+        padding: 6px 10px;
+    }
+}
+
+/* עיצוב כפתורי התחברות והרשמה */
+.submit-btn {
+    background: linear-gradient(45deg, #795548, #8D6E63);
+    color: white;
+    border: none;
+    border-radius: 25px;
+    padding: 12px 30px;
+    font-size: 16px;
+    font-weight: 500;
+    width: 100%;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin: 20px 0;
+}
+
+.submit-btn:hover {
+    background: linear-gradient(45deg, #8D6E63, #795548);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* עיצוב תיבת הבחירה של מגדר */
+select {
+    width: 100%;
+    padding: 10px 15px;
+    border: 2px solid #D7CCC8;
+    border-radius: 8px;
+    background: white;
+    color: #5D4037;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23795548' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: left 10px center;
+    background-size: 20px;
+    padding-left: 35px;
+}
+
+select:focus {
+    border-color: #795548;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(121, 85, 72, 0.1);
+}
+
+select:hover {
+    border-color: #795548;
+}
+
+/* עיצוב טקסט החלפת טפסים */
+.switch-form {
+    text-align: center;
+    color: #5D4037;
+    font-size: 14px;
+    margin-top: -15px;
+}
+
+.switch-form a {
+    color: #795548;
+    text-decoration: none;
+    font-weight: 500;
+    padding: 3px 6px;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+}
+
+.switch-form a:hover {
+    background: rgba(121, 85, 72, 0.1);
+    color: #4E342E;
+}
+
+/* עיצוב בורר המגדר */
+.gender-selector {
+    display: flex;
+    gap: 10px;
+    margin-top: 5px;
+}
+
+.gender-option {
+    flex: 1;
+    padding: 12px;
+    border: 2px solid #D7CCC8;
+    border-radius: 8px;
+    background: white;
+    color: #5D4037;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.gender-option i {
+    font-size: 18px;
+}
+
+.gender-option:hover {
+    border-color: #795548;
+    background: rgba(121, 85, 72, 0.05);
+}
+
+.gender-option.selected {
+    background: #795548;
+    color: white;
+    border-color: #795548;
+}
+
+.gender-option.selected:hover {
+    background: #8D6E63;
+}
+
+/* עיצוב תצוגת מגדרים */
+.gender-spots {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 10px;
+}
+
+.male-spots, .female-spots {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 0.9em;
+}
+
+.male-spots {
+    background: rgba(0, 0, 255, 0.1);
+    color: #2196F3;
+}
+
+.female-spots {
+    background: rgba(255, 0, 255, 0.1);
+    color: #E91E63;
+}
+
+.gender-sections {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.male-section, .female-section {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
+.section-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 500;
+    margin-bottom: 8px;
+    padding: 5px 10px;
+    border-radius: 4px;
+}
+
+.section-title:has(+ .male-section) {
+    color: #2C3E50;
+    background: rgba(44, 62, 80, 0.08);
+    border-right: 3px solid #2C3E50;
+    display: flow;
+}
+
+.section-title:has(+ .female-section) {
+    color: #9B6B9D;
+    background: rgba(155, 107, 157, 0.08);
+    border-right: 3px solid #9B6B9D;
+    display: flow;
+}
+
+.male-section, .female-section {
+    margin-bottom: 15px;
+}
+
+/* עיצוב בסיסי לטבלה */
+.schedule-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: center;
+    background: white;
+    font-size: 0.95em;
+    table-layout: fixed;
+}
+
+/* עיצוב כותרות וימים */
+.schedule-table th {
+    width: 20%;
+    background: #795548;
+    color: white;
+    padding: 4px;
+    border: 1px solid #5D4037;
+}
+
+.day-header {
+    background: #795548;
+    color: white;
+    padding: 10px;
+    text-align: center;
+    border-radius: 8px 8px 0 0;
+}
+
+.day-name {
+    font-size: 1.2em;
+    font-weight: 500;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.479);
+    padding-bottom: 3px;
+}
+
+.date {
+    font-size: 0.85em;
+    line-height: 1.4;
+    color: rgba(255, 255, 255, 0.699);
+    white-space: nowrap;
+    font-weight: 500;
+}
+
+/* התאמה למובייל */
+@media screen and (max-width: 768px) {
+    .schedule-table thead {
+        display: none;
+    }
+
+    .schedule-table td {
+        display: block;
+        width: 100%;
+        height: auto;
+        padding: 0;
+        margin-bottom: 15px;
+        border-radius: 8px;
+        background: white;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        overflow: hidden;
+    }
+
+    .schedule-table td:before,
+    .schedule-table td:after {
+        display: none;
+    }
+
+    .waiters-list {
+        padding: 15px;
+        margin: 0;
+    }
+}
+
+/* התאמה למסך רגיל */
+@media screen and (min-width: 769px) {
+    .schedule-table td .day-header {
+        display: none; /* מסתיר את הכותרת בתאים במסך רגיל */
+    }
+}
+
+/* התאמה למובייל */
+@media screen and (max-width: 768px) {
+    .schedule-table thead {
+        display: none; /* מסתיר את הכותרת המקורית במובייל */
+    }
+
+    .schedule-table td {
+        display: block;
+        width: 100%;
+        height: auto;
+        padding: 0;
+        margin-bottom: 15px;
+        border-radius: 8px;
+        background: white;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        overflow: hidden;
+    }
+
+    /* הסרת ה-pseudo elements */
+    .schedule-table td:before,
+    .schedule-table td:after {
+        display: none;
+    }
+
+    .waiters-list {
+        padding: 15px;
+        margin: 0;
+    }
+}
+
+.assign-btn.full {
+    background: #BDBDBD;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.assign-btn.full:hover {
+    background: #BDBDBD;
+    transform: none;
+}
+
+.day-header {
+    background: #795548;
+    color: white;
+    padding: 10px;
+    text-align: center;
+    border-radius: 8px 8px 0 0;
+}
+
+.assign-btn {
+    width: 100%;
+    padding: 8px;
+    margin: 0;
+    border-radius: 0;
+    border: none;
+    background: #8D6E63;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+    font-weight: 500;
+    display: block;
+}
+
+.assign-btn:hover:not(:disabled) {
+    background: #795548;
+}
+
+.assign-btn.full {
+    background: #BDBDBD;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.waiters-list {
+    padding: 15px;
+    margin: 0;
+}
+
+/* עיצוב המודל */
+.success-modal {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    text-align: center;
+    width: 85%;
+    max-width: 320px;
+}
+
+/* רקע כהה למודל */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    animation: fadeIn 0.3s ease-out;
+}
+
+/* אנימציית כניסה למודל */
+@keyframes slideIn {
+    from {
+        transform: translate(-50%, -60%);
+        opacity: 0;
+    }
+    to {
+        transform: translate(-50%, -50%);
+        opacity: 1;
+    }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* תוכן המודל */
+.success-modal .modal-icon {
+    font-size: 48px;
+    color: #4CAF50;
+    margin-bottom: 15px;
+}
+
+.success-modal h2 {
+    color: #4E342E;
+    margin: 0 0 10px 0;
+    font-size: 1.4em;
+}
+
+.success-modal p {
+    color: #795548;
+    margin: 0;
+    font-size: 1.1em;
+}
+
+.modal-close-btn {
+    background: #795548;
+    color: white;
+    border: none;
+    padding: 10px 25px;
+    border-radius: 25px;
+    font-size: 1em;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.modal-close-btn:hover {
+    background: #6D4C41;
+    transform: translateY(-2px);
+}
+
+/* התאמות למובייל */
+@media screen and (max-width: 480px) {
+    .success-modal {
+        width: 90%;
+        padding: 20px;
+    }
+
+    .success-modal .modal-icon {
+        font-size: 42px;
+    }
+
+    .success-modal h2 {
+        font-size: 1.2em;
+    }
+
+    .success-modal p {
+        font-size: 1em;
+    }
+}
+
+.edit-limits-btn {
+    background: none;
+    border: none;
+    color: #795548;
+    cursor: pointer;
+    padding: 0 5px;
+    font-size: 14px;
+}
+
+.edit-limits-btn:hover {
+    color: #4E342E;
+}
+
+/* רק למנהלים */
+.section-title {
+    position: relative;
+}
+
+.edit-limits-btn {
+    position: absolute;
+    left: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.limits-modal {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    width: 90%;
+    max-width: 400px;
+}
+
+.limits-modal h2 {
+    color: #4E342E;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.limits-modal h3 {
+    color: #795548;
+    margin-bottom: 20px;
+    text-align: center;
+    font-size: 1.1em;
+}
+
+.limits-inputs {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.limit-input {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.limit-input label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #5D4037;
+}
+
+.limit-input input {
+    padding: 8px;
+    border: 2px solid #D7CCC8;
+    border-radius: 8px;
+    font-size: 16px;
+}
+
+.modal-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.submit-btn, .cancel-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    gap: 8px;
+    font-weight: 500;
+}
+
+.submit-btn {
+    background: #795548;
+    color: white;
+}
+
+.cancel-btn {
+    background: #EEEEEE;
+    color: #424242;
 } 

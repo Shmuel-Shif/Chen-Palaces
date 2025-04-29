@@ -34,10 +34,44 @@
 
             <div id="error-message" class="error-message"></div>
 
-            <button type="submit" class="login-btn">
-                התחבר
-            </button>
+            <button type="submit" class="submit-btn">התחבר</button>
+            <p class="switch-form">עדיין אין לך חשבון? <a href="#" id="showRegister">הירשם עכשיו</a></p>
         </form>
+
+        <form id="registerForm" class="login-form" style="display: none;">
+            <div class="form-group">
+                <label><i class="fas fa-user"></i> שם מלא</label>
+                <input type="text" id="regFullName" required>
+            </div>
+            <div class="form-group">
+                <label><i class="fas fa-lock"></i> סיסמה</label>
+                <input type="password" id="regPassword" required>
+            </div>
+            <div class="form-group">
+                <label><i class="fas fa-venus-mars"></i> מגדר</label>
+                <div class="gender-selector">
+                    <div class="gender-option" data-value="male">
+                        <i class="fas fa-mars"></i>
+                        זכר
+                    </div>
+                    <div class="gender-option" data-value="female">
+                        <i class="fas fa-venus"></i>
+                        נקבה
+                    </div>
+                </div>
+            </div>
+            <div id="reg-error-message" class="error-message"></div>
+            <button type="submit" class="submit-btn">הירשם</button>
+            <p class="switch-form">כבר יש לך חשבון? <a href="#" id="showLogin">התחבר</a></p>
+        </form>
+    </div>
+
+    <!-- מודל הצלחה -->
+    <div class="modal-overlay" id="modalOverlay"></div>
+    <div class="success-modal" id="successModal">
+        <i class="fas fa-check-circle modal-icon"></i>
+        <h2 id="modalTitle"></h2>
+        <p>מועבר לדף הבית...</p>
     </div>
 
     <!-- Firebase SDK -->
