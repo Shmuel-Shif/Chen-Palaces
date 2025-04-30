@@ -108,6 +108,19 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
     const username = document.getElementById('username').value;
     const password = document.getElementById('password').value;
 
+    // בדיקה אם זה המנהל
+    if (username === 'שמואל שיף' && password === '2121') {
+        const adminUser = {
+            id: 'ADMIN',
+            name: username,
+            gender: 'male',
+            isAdmin: true
+        };
+        localStorage.setItem('currentUser', JSON.stringify(adminUser));
+        window.location.href = 'dashboard.html';
+        return;
+    }
+
     // בדיקת תקינות הסיסמה
     if (!/^\d{4}$/.test(password)) {
         showError('error-message', 'הסיסמה חייבת להכיל 4 ספרות בדיוק');

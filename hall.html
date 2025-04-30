@@ -8,6 +8,12 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
+    <div id="pageLoader" class="loader-container">
+        <div class="loader">
+            <img src="images/logo/logo.png" alt="Loading...">
+        </div>
+    </div>
+
     <div class="schedule-container">
         <header class="main-header">
             <div class="header-left">
@@ -108,54 +114,6 @@
         <footer class="main-footer">
             <p>© 2025 ארמונות חן, שמואל שיף | 058-7701009</p>
         </footer>
-    </div>
-
-    <!-- מודל הצלחה -->
-    <div class="modal-overlay" id="modalOverlay"></div>
-    <div class="success-modal" id="successModal">
-        <i class="fas fa-check-circle modal-icon"></i>
-        <h2>השיבוץ בוצע בהצלחה!</h2>
-        <p>נרשמת בהצלחה למשמרת</p>
-        <button class="modal-close-btn" onclick="closeModal()">
-            <i class="fas fa-times"></i>
-            סגור
-        </button>
-    </div>
-
-    <!-- הוסף את זה לפני סגירת תג body -->
-    <div class="modal-overlay" id="limitsModalOverlay"></div>
-    <div class="limits-modal" id="limitsModal">
-        <h2>הגדרת מספר מלצרים</h2>
-        <h3 id="limitsDayName"></h3>
-        
-        <div class="limits-inputs">
-            <div class="limit-input">
-                <label>
-                    <i class="fas fa-mars"></i>
-                    מספר מלצרים:
-                </label>
-                <input type="number" id="maleLimitInput" min="1" max="30">
-            </div>
-            
-            <div class="limit-input">
-                <label>
-                    <i class="fas fa-venus"></i>
-                    מספר מלצריות:
-                </label>
-                <input type="number" id="femaleLimitInput" min="1" max="30">
-            </div>
-        </div>
-
-        <div class="modal-buttons">
-            <button id="saveLimitsBtn" class="submit-btn">
-                <i class="fas fa-save"></i>
-                שמור
-            </button>
-            <button id="cancelLimitsBtn" class="cancel-btn">
-                <i class="fas fa-times"></i>
-                ביטול
-            </button>
-        </div>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
