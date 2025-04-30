@@ -1,17 +1,33 @@
-// להוסיף בתחילת הקובץ
-// מעבר בין טפסים
+// בתחילת הקובץ - נוסיף בדיקה האם אנחנו בדף ההרשמה
+document.addEventListener('DOMContentLoaded', () => {
+    // בודק אם יש פרמטר register ב-URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const isRegisterPage = urlParams.has('register');
+    
+    if (isRegisterPage) {
+        // אם זה דף ההרשמה
+        document.querySelector('.login-container').style.paddingTop = '30px';
+        document.getElementById('loginForm').style.display = 'none';
+        document.getElementById('registerForm').style.display = 'flex';
+        document.getElementById('formTitle').textContent = 'הרשמה למערכת';
+    } else {
+        // אם זה דף ההתחברות
+        document.querySelector('.login-container').style.paddingTop = '90px';
+        document.getElementById('registerForm').style.display = 'none';
+        document.getElementById('loginForm').style.display = 'flex';
+        document.getElementById('formTitle').textContent = 'התחברות למערכת';
+    }
+});
+
+// עדכון המעבר בין הטפסים
 document.getElementById('showRegister').addEventListener('click', (e) => {
     e.preventDefault();
-    document.getElementById('loginForm').style.display = 'none';
-    document.getElementById('registerForm').style.display = 'flex';
-    document.getElementById('formTitle').textContent = 'הרשמה למערכת';
+    window.location.href = 'index.html?register';
 });
 
 document.getElementById('showLogin').addEventListener('click', (e) => {
     e.preventDefault();
-    document.getElementById('registerForm').style.display = 'none';
-    document.getElementById('loginForm').style.display = 'flex';
-    document.getElementById('formTitle').textContent = 'התחברות למערכת';
+    window.location.href = 'index.html';
 });
 
 // להוסיף בתחילת הקובץ:
@@ -36,6 +52,11 @@ document.getElementById('registerForm').addEventListener('submit', async (e) => 
     const password = document.getElementById('regPassword').value;
     const selectedGender = document.querySelector('.gender-option.selected');
 
+    if (!/^\d{4}$/.test(password)) {
+        showError('reg-error-message', 'הסיסמה חייבת להכיל 4 ספרות בדיוק');
+        return;
+    }
+
     if (!selectedGender) {
         showError('reg-error-message', 'יש לבחור מגדר');
         return;
@@ -53,8 +74,14 @@ document.getElementById('registerForm').addEventListener('submit', async (e) => 
             return;
         }
 
-        // יצירת מזהה ייחודי
-        const newWaiterId = waitersRef.push().key;
+        // קבלת המספר הבא בסדרה
+        const counterRef = database.ref('counters/waiterId');
+        const counterSnapshot = await counterRef.once('value');
+        const currentCounter = counterSnapshot.val() || 0;
+        const nextCounter = currentCounter + 1;
+        
+        // יצירת מזהה בפורמט החדש
+        const newWaiterId = `OP${nextCounter.toString().padStart(3, '0')}`;
         
         // שמירת פרטי המשתמש החדש
         await waitersRef.child(newWaiterId).set({
@@ -64,18 +91,11 @@ document.getElementById('registerForm').addEventListener('submit', async (e) => 
             gender: gender
         });
 
-        // מעבר לטופס התחברות
-        document.getElementById('loginForm').style.display = 'block';
-        document.getElementById('registerForm').style.display = 'none';
-        document.getElementById('formTitle').textContent = 'התחברות למערכת';
-        
-        // הכנסת שם המשתמש לשדה התחברות
-        document.getElementById('username').value = fullName;
-        
-        // הצגת הודעה למשתמש
-        const loginError = document.getElementById('error-message');
-        loginError.style.color = '#4CAF50';
-        loginError.textContent = 'ההרשמה הושלמה בהצלחה, אנא התחבר';
+        // עדכון המונה
+        await counterRef.set(nextCounter);
+
+        // מעבר לדף ההתחברות
+        window.location.href = 'index.html';
 
     } catch (error) {
         console.error(error);
@@ -87,6 +107,12 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     const username = document.getElementById('username').value;
     const password = document.getElementById('password').value;
+
+    // בדיקת תקינות הסיסמה
+    if (!/^\d{4}$/.test(password)) {
+        showError('error-message', 'הסיסמה חייבת להכיל 4 ספרות בדיוק');
+        return;
+    }
 
     try {
         const waitersRef = database.ref('waiters');
@@ -132,6 +158,12 @@ const showSuccessModal = (isLogin = false) => {
     document.getElementById('successModal').style.display = 'block';
 };
 
+// הוספת אפשרות לסגירת המודל בלחיצה על ה-overlay
+document.getElementById('modalOverlay').addEventListener('click', () => {
+    document.getElementById('modalOverlay').style.display = 'none';
+    document.getElementById('successModal').style.display = 'none';
+});
+
 // פונקציה להצגת הודעת שגיאה
 const showError = (elementId, message) => {
     const errorElement = document.getElementById(elementId);
@@ -141,4 +173,13 @@ const showError = (elementId, message) => {
     setTimeout(() => {
         errorElement.textContent = '';
     }, 5000);
-}; 
+};
+
+// הוספת אירועי input לשדות הסיסמה
+document.getElementById('password').addEventListener('input', function(e) {
+    this.value = this.value.replace(/\D/g, '').slice(0, 4);
+});
+
+document.getElementById('regPassword').addEventListener('input', function(e) {
+    this.value = this.value.replace(/\D/g, '').slice(0, 4);
+}); 

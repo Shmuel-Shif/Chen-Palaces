@@ -15,13 +15,52 @@ document.getElementById('hallName').textContent = hallName.replace(/-/g, ' ');
 // הגדרת מקסימום מלצרים ליום
 const MAX_WAITERS = 5;
 
-// הגדרת הגבלות לפי ימים
+// הגדרת הגבלות לפי אולם וימים
+const HALL_LIMITS = {
+    'אולם-כלנית': {
+        'יום ראשון': { male: 1, female: 1 },
+        'יום שני': { male: 2, female: 2 },
+        'יום שלישי': { male: 8, female: 5 },
+        'יום רביעי': { male: 8, female: 5 },
+        'יום חמישי': { male: 8, female: 5 }
+    },
+    'אולם-רקפת': {
+        'יום ראשון': { male: 10, female: 6 },
+        'יום שני': { male: 8, female: 5 },
+        'יום שלישי': { male: 8, female: 5 },
+        'יום רביעי': { male: 8, female: 5 },
+        'יום חמישי': { male: 10, female: 6 }
+    },
+    'אולם-אירוסים': {
+        'יום ראשון': { male: 12, female: 7 },
+        'יום שני': { male: 10, female: 6 },
+        'יום שלישי': { male: 10, female: 6 },
+        'יום רביעי': { male: 10, female: 6 },
+        'יום חמישי': { male: 12, female: 7 }
+    },
+    'אולם-סחלב': {
+        'יום ראשון': { male: 10, female: 6 },
+        'יום שני': { male: 8, female: 5 },
+        'יום שלישי': { male: 8, female: 5 },
+        'יום רביעי': { male: 8, female: 5 },
+        'יום חמישי': { male: 10, female: 6 }
+    },
+    'אולם-נרקיס': {
+        'יום ראשון': { male: 15, female: 8 },
+        'יום שני': { male: 10, female: 6 },
+        'יום שלישי': { male: 12, female: 7 },
+        'יום רביעי': { male: 10, female: 6 },
+        'יום חמישי': { male: 15, female: 8 }
+    },
+};
+
+// הגדרת הגבלות לפי ימים - ברירת מחדל
 const DAILY_LIMITS = {
-    'ראשון': { male: 15, female: 8 },
-    'שני': { male: 10, female: 6 },
-    'שלישי': { male: 12, female: 7 },
-    'רביעי': { male: 10, female: 6 },
-    'חמישי': { male: 15, female: 8 }
+    'יום ראשון': { male: 15, female: 8 },
+    'יום שני': { male: 10, female: 6 },
+    'יום שלישי': { male: 12, female: 7 },
+    'יום רביעי': { male: 10, female: 6 },
+    'יום חמישי': { male: 15, female: 8 }
 };
 
 // פונקציה ליצירת תאריך בפורמט YYYY-MM-DD
@@ -96,32 +135,36 @@ const formatFullDate = (date) => {
 // פונקציה לעדכון התא
 const updateCell = (td, date, shifts, index) => {
     const dateStr = formatDate(date);
-    const shift = shifts[dateStr] || { male: [], female: [] };
-    const currentUserGender = currentUser.gender;
-    
-    // קבלת שם היום בעברית
     const dayName = date.toLocaleDateString('he-IL', { weekday: 'long' });
-    const limits = DAILY_LIMITS[dayName] || { male: 8, female: 5 }; // ברירת מחדל אם אין הגבלות
     
-    // עדכון התאריך בכותרת
-    const formattedDate = formatFullDate(date);
-    document.getElementById(`date-${index}`).innerHTML = formattedDate;
+    // קבלת המגבלות הספציפיות לאולם
+    const hallLimits = HALL_LIMITS[hallName] || DAILY_LIMITS;
+    const limits = hallLimits[dayName] || { male: 8, female: 5 }; // ברירת מחדל אם אין מגבלות
+    
+    // קבלת רשימות המלצרים לפי מגדר
+    const shift = shifts[dateStr] || {};
+    
+    // התאמה למבנה החדש של Firebase
+    const maleWaiters = shift.male ? 
+        (typeof shift.male === 'object' ? Object.values(shift.male) : []) : [];
+    const femaleWaiters = shift.female ? 
+        (typeof shift.female === 'object' ? Object.values(shift.female) : []) : [];
 
-    // עדכון התא עם היום והתאריך בראש
+    // עדכון התא עם הסדר החדש
     td.innerHTML = `
         <div class="day-header">
             <div class="day-name">${dayName}</div>
-            <div class="date">${formattedDate}</div>
+            <div class="date">${formatFullDate(date)}</div>
         </div>
-        <button class="assign-btn">שבץ אותי</button>
+        <button class="assign-btn" data-date="${dateStr}">שבץ אותי</button>
         <div class="waiters-list">
             <div class="gender-sections">
                 <div class="section-title">
                     <i class="fas fa-mars"></i>
-                    גברים (${shift.male?.length || 0}/${limits.male})
+                    גברים (${maleWaiters.length}/${limits.male})
                 </div>
                 <div class="male-section">
-                    ${(shift.male || []).map(waiterId => `
+                    ${maleWaiters.map(waiterId => `
                         <div class="waiter-tag male">
                             <span data-waiter-id="${waiterId}">טוען...</span>
                         </div>
@@ -129,10 +172,10 @@ const updateCell = (td, date, shifts, index) => {
                 </div>
                 <div class="section-title">
                     <i class="fas fa-venus"></i>
-                    נשים (${shift.female?.length || 0}/${limits.female})
+                    נשים (${femaleWaiters.length}/${limits.female})
                 </div>
                 <div class="female-section">
-                    ${(shift.female || []).map(waiterId => `
+                    ${femaleWaiters.map(waiterId => `
                         <div class="waiter-tag female">
                             <span data-waiter-id="${waiterId}">טוען...</span>
                         </div>
@@ -143,57 +186,58 @@ const updateCell = (td, date, shifts, index) => {
         <div class="error-message"></div>
     `;
 
-    // הגדרת מאפיינים לתצוגת מובייל
-    // td.setAttribute('data-day', dayName);
-    // td.setAttribute('data-date', formattedDate.replace('<br>', '\n'));
-
     // טעינת שמות המלצרים
-    const loadWaiterNames = (waiterId) => {
-        database.ref('waiters').child(waiterId).once('value')
-            .then(snapshot => {
-                const waiterName = snapshot.val()?.name || 'מלצר לא ידוע';
-                const nameElements = td.querySelectorAll(`[data-waiter-id="${waiterId}"]`);
-                nameElements.forEach(el => el.textContent = waiterName);
-            });
+    const loadWaiterNames = async (waiterId) => {
+        try {
+            // מנקים את ה-ID (מסירים את OP)
+            const cleanWaiterId = waiterId.replace('OP', '');
+            
+            // טוען את פרטי המלצר מ-Firebase
+            const snapshot = await database.ref(`waiters/OP${cleanWaiterId}`).once('value');
+            const waiterData = snapshot.val();
+            
+            if (waiterData && waiterData.name) {
+                const nameElements = document.querySelectorAll(`[data-waiter-id="${waiterId}"]`);
+                nameElements.forEach(el => {
+                    el.textContent = waiterData.name;
+                    el.classList.remove('loading');
+                });
+            } else {
+                console.error('No waiter data found for ID:', waiterId);
+            }
+        } catch (error) {
+            console.error('Error loading waiter name:', error, 'ID:', waiterId);
+        }
     };
 
-    shift.male?.forEach(loadWaiterNames);
-    shift.female?.forEach(loadWaiterNames);
+    maleWaiters.forEach(loadWaiterNames);
+    femaleWaiters.forEach(loadWaiterNames);
 
     // בדיקת מצב המשמרת למגדר הספציפי
+    const currentUserGender = currentUser.gender.toLowerCase();
     const isGenderFull = currentUserGender === 'male' ? 
-        (shift.male?.length || 0) >= limits.male : 
-        (shift.female?.length || 0) >= limits.female;
+        maleWaiters.length >= limits.male : 
+        femaleWaiters.length >= limits.female;
     
-    const isAssigned = shift[currentUserGender.toLowerCase()]?.includes(currentUser.id);
+    const isAssigned = currentUserGender === 'male' ? 
+        maleWaiters.includes(currentUser.id) : 
+        femaleWaiters.includes(currentUser.id);
 
     // עדכון כפתור
     const button = td.querySelector('.assign-btn');
-    button.disabled = isGenderFull || isAssigned;
-    
-    if (isGenderFull && !isAssigned) {
-        button.classList.add('full');
-        button.textContent = 'אין מקום פנוי ✕';
-    } else if (isAssigned) {
-        button.classList.remove('full');
-        button.textContent = 'שובץ';
-    } else {
-        button.classList.remove('full');
-        button.textContent = 'שבץ אותי';
-    }
-    
-    button.dataset.date = dateStr;
-
-    // בתחילת הקובץ נוסיף:
-    const isAdmin = currentUser.isAdmin;
-
-    // ובפונקציה updateCell נוסיף אפשרות עריכה למנהל:
-    if (isAdmin) {
-        const editBtn = document.createElement('button');
-        editBtn.className = 'edit-limits-btn';
-        editBtn.innerHTML = '<i class="fas fa-edit"></i>';
-        editBtn.onclick = () => showLimitsEditor(dayName, limits);
-        td.querySelector('.section-title').appendChild(editBtn);
+    if (button) {
+        button.disabled = isGenderFull || isAssigned;
+        
+        if (isGenderFull && !isAssigned) {
+            button.classList.add('full');
+            button.textContent = 'אין מקום פנוי ✕';
+        } else if (isAssigned) {
+            button.classList.remove('full');
+            button.textContent = 'שובץ';
+        } else {
+            button.classList.remove('full');
+            button.textContent = 'שבץ אותי';
+        }
     }
 };
 
@@ -221,20 +265,27 @@ const loadWeeklySchedule = async () => {
     // מציאת יום ראשון של השבוע הנוכחי
     const sunday = getCurrentSunday(today);
     
-    const shiftsSnapshot = await database.ref(`shifts/${hallName}`).once('value');
-    const shifts = shiftsSnapshot.val() || {};
+    try {
+        // טעינת השיבוצים מ-Firebase
+        const shiftsSnapshot = await database.ref(`shifts/${hallName}`).once('value');
+        const shifts = shiftsSnapshot.val() || {};
 
-    cells.forEach((td, index) => {
-        const date = new Date(sunday);
-        // מוסיף ימים תוך דילוג על שישי-שבת
-        let daysToAdd = index;
-        if (index > 0) {
-            // מוסיף יומיים נוספים עבור כל סוף שבוע שעברנו
-            daysToAdd += Math.floor((index + sunday.getDay()) / 5) * 2;
-        }
-        date.setDate(sunday.getDate() + daysToAdd);
-        updateCell(td, date, shifts, index);
-    });
+        cells.forEach((td, index) => {
+            const date = new Date(sunday);
+            date.setDate(sunday.getDate() + index);
+            
+            // עדכון התאריך בכותרת
+            const formattedDate = formatFullDate(date);
+            const dateHeader = document.getElementById(`date-${index}`);
+            if (dateHeader) {
+                dateHeader.innerHTML = formattedDate;
+            }
+            
+            updateCell(td, date, shifts, index);
+        });
+    } catch (error) {
+        console.error('Error loading schedule:', error);
+    }
 };
 
 // עדכון הטיפול בלחיצה על כפתור שיבוץ
@@ -243,29 +294,47 @@ document.querySelector('.schedule-table').addEventListener('click', async (e) =>
     
     const dateStr = e.target.dataset.date;
     const gender = currentUser.gender.toLowerCase();
-    const shiftsRef = database.ref(`shifts/${hallName}/${dateStr}/${gender}`);
+    const clickedCell = e.target.closest('td'); // שמירת התא שבו לחצנו
     
     try {
+        // קבלת הרשימה הנוכחית של המלצרים
+        const shiftsRef = database.ref(`shifts/${hallName}/${dateStr}/${gender}`);
         const snapshot = await shiftsRef.once('value');
-        const currentWaiters = snapshot.val() || [];
+        const currentWaiters = snapshot.val() ? Object.values(snapshot.val()) : [];
         
         // בדיקת מגבלת מגדר
-        const maxWaiters = gender === 'male' ? 8 : 5;
-        if (currentWaiters.length >= maxWaiters) {
+        const dayName = new Date(dateStr).toLocaleDateString('he-IL', { weekday: 'long' });
+        const hallLimits = HALL_LIMITS[hallName] || DAILY_LIMITS;
+        const limits = hallLimits[dayName] || { male: 8, female: 5 };
+        
+        if (currentWaiters.length >= limits[gender]) {
             throw new Error(`אין מקום פנוי ל${gender === 'male' ? 'גברים' : 'נשים'} במשמרת זו`);
         }
 
-        // הוספת המלצר/ית למשמרת
+        // הוספת המלצר/ית בתחילת המערך
         if (!currentWaiters.includes(currentUser.id)) {
-            await shiftsRef.set([...currentWaiters, currentUser.id]);
+            await shiftsRef.set([currentUser.id, ...currentWaiters]);
+            
+            // הוספת אנימציה למלצר החדש בתא הספציפי
+            setTimeout(() => {
+                const newWaiterElement = clickedCell.querySelector(`[data-waiter-id="${currentUser.id}"]`);
+                if (newWaiterElement) {
+                    newWaiterElement.classList.add('waiter-bounce');
+                    // הסרת האנימציה אחרי שהיא מסתיימת
+                    setTimeout(() => {
+                        newWaiterElement.classList.remove('waiter-bounce');
+                    }, 500); // משך האנימציה
+                }
+            }, 100);
         }
         
         // טעינה מחדש של השיבוצים
         loadWeeklySchedule();
         
     } catch (error) {
-        const errorElement = e.target.nextElementSibling;
-        errorElement.textContent = error.message;
+        console.error('Error in assignment:', error);
+        const errorElement = clickedCell.querySelector('.error-message');
+        errorElement.textContent = error.message || 'אירעה שגיאה בשיבוץ';
         setTimeout(() => errorElement.textContent = '', 3000);
     }
 });
@@ -400,7 +469,7 @@ const showLimitsEditor = (dayName, currentLimits) => {
                 });
                 
                 // עדכון ה-DAILY_LIMITS המקומי
-                DAILY_LIMITS[dayName] = { male: maleLimit, female: femaleLimit };
+                HALL_LIMITS[hallName][dayName] = { male: maleLimit, female: femaleLimit };
                 
                 // טעינה מחדש של הטבלה
                 loadWeeklySchedule();

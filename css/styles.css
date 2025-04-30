@@ -357,23 +357,67 @@ body {
 }
 
 .assign-btn {
-    width: 100%;
-    padding: 8px;
-    margin: 0;
-    border: none;
-    background: #8D6E63;
-    color: white;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    border-top: 1px solid rgba(255,255,255,0.1);
-    border-bottom: 1px solid rgba(0,0,0,0.1);
-    font-weight: 500;
+    margin: 10px auto;
     display: block;
+    padding: 8px 20px;
+    border-radius: 5px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s;
 }
 
-.assign-btn.assigned {
-    background-color: #666;
+.assign-btn:hover {
+    background-color: #45a049;
+}
+
+.assign-btn:disabled {
+    background-color: #cccccc;
     cursor: not-allowed;
+}
+
+.assign-btn.full {
+    background-color: #f44336;
+}
+
+.waiters-list {
+    padding: 15px;
+    margin: 0;
+    background: white;
+}
+
+.schedule-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: center;
+    background: white;
+    font-size: 0.95em;
+    table-layout: fixed;
+}
+
+.schedule-table th {
+    width: 20%;
+    background: #795548;
+    color: white;
+    padding: 4px;
+    border: 1px solid #5D4037;
+}
+
+.success-modal {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    text-align: center;
+    width: 85%;
+    max-width: 320px;
 }
 
 .user-stats {
@@ -551,9 +595,9 @@ body {
 }
 
 /* התאמות לגובה נמוך */
-@media screen and (max-height: 600px) {
+@media screen and (max-height: 768px) {
     .login-container {
-        margin: 5px;
+        padding-top: 90px;
     }
 
     .login-header {
@@ -772,13 +816,6 @@ body {
     color: #795548;
 }
 
-.waiters-list {
-    padding: 15px;
-    margin: 0;
-    background: white;
-    display: block;
-}
-
 .waiter-item {
     display: flex;
     align-items: center;
@@ -793,10 +830,6 @@ body {
 .waiter-item i {
     margin-left: 8px;
     color: #795548;
-}
-
-.assign-btn:hover {
-    background: linear-gradient(45deg, #4E342E, #6D4C41);
 }
 
 .assign-btn:disabled {
@@ -828,7 +861,7 @@ body {
     }
 
     .schedule-grid h1 .icon-btn {
-        right: 0px;
+        right: 6px;
         font-size: 0.9em;
     }
 }
@@ -842,52 +875,10 @@ body {
     border: 1px solid #5D4037;
 }
 
-.schedule-table {
-    width: 100%;
-    border-collapse: collapse;
-    text-align: center;
-    background: white;
-    font-size: 0.95em;
-    table-layout: fixed;
-}
-
-.schedule-table th {
-    width: 20%;
-    background: #795548;
-    color: white;
-    padding: 4px;
-    border: 1px solid #5D4037;
-}
-
-.day-header {
-    background: #795548;
-    color: white;
-    padding: 10px;
-    text-align: center;
-    border-radius: 8px 8px 0 0;
-}
-
-.day-name {
-    font-weight: 500;
-    font-size: 1.1em;
-    margin-bottom: 5px;
-}
-
-.date {
-    color: rgba(255, 255, 255, 0.9);
-    font-size: 0.85em;
-}
-
 .schedule-table td {
     border: 1px solid #5D4037;    vertical-align: top;
     height: 1000px;
     background: none;
-}
-
-.waiters-list {
-    padding: 15px;
-    margin: 0;
-    background: white;
 }
 
 /* עיצוב סרגל הגלילה */
@@ -1016,10 +1007,11 @@ select:hover {
 .switch-form a {
     color: #795548;
     text-decoration: none;
-    font-weight: 500;
+    font-weight: bold;
     padding: 3px 6px;
     border-radius: 4px;
     transition: all 0.3s ease;
+    font-size: 15px;
 }
 
 .switch-form a:hover {
@@ -1135,48 +1127,6 @@ select:hover {
     margin-bottom: 15px;
 }
 
-/* עיצוב בסיסי לטבלה */
-.schedule-table {
-    width: 100%;
-    border-collapse: collapse;
-    text-align: center;
-    background: white;
-    font-size: 0.95em;
-    table-layout: fixed;
-}
-
-/* עיצוב כותרות וימים */
-.schedule-table th {
-    width: 20%;
-    background: #795548;
-    color: white;
-    padding: 4px;
-    border: 1px solid #5D4037;
-}
-
-.day-header {
-    background: #795548;
-    color: white;
-    padding: 10px;
-    text-align: center;
-    border-radius: 8px 8px 0 0;
-}
-
-.day-name {
-    font-size: 1.2em;
-    font-weight: 500;
-    border-bottom: 2px solid rgba(255, 255, 255, 0.479);
-    padding-bottom: 3px;
-}
-
-.date {
-    font-size: 0.85em;
-    line-height: 1.4;
-    color: rgba(255, 255, 255, 0.699);
-    white-space: nowrap;
-    font-weight: 500;
-}
-
 /* התאמה למובייל */
 @media screen and (max-width: 768px) {
     .schedule-table thead {
@@ -1254,12 +1204,20 @@ select:hover {
     transform: none;
 }
 
-.day-header {
-    background: #795548;
-    color: white;
-    padding: 10px;
-    text-align: center;
-    border-radius: 8px 8px 0 0;
+.day-header .day-name {
+    font-weight: 500;
+    font-size: 1.1em;
+    margin-bottom: 5px;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.479);
+    padding-bottom: 5px;
+}
+
+.day-header .date,
+#date-0, #date-1, #date-2, #date-3, #date-4 {
+    color: rgba(255, 255, 255, 0.692);
+    font-size: 0.85em;
+    padding-bottom: 5px;
+    font-weight: 500;
 }
 
 .assign-btn {
@@ -1294,53 +1252,6 @@ select:hover {
 }
 
 /* עיצוב המודל */
-.success-modal {
-    display: none;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: white;
-    padding: 25px;
-    border-radius: 15px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-    z-index: 1000;
-    text-align: center;
-    width: 85%;
-    max-width: 320px;
-}
-
-/* רקע כהה למודל */
-.modal-overlay {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 999;
-    animation: fadeIn 0.3s ease-out;
-}
-
-/* אנימציית כניסה למודל */
-@keyframes slideIn {
-    from {
-        transform: translate(-50%, -60%);
-        opacity: 0;
-    }
-    to {
-        transform: translate(-50%, -50%);
-        opacity: 1;
-    }
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-/* תוכן המודל */
 .success-modal .modal-icon {
     font-size: 48px;
     color: #4CAF50;
@@ -1501,4 +1412,130 @@ select:hover {
 .cancel-btn {
     background: #EEEEEE;
     color: #424242;
+}
+
+@media screen and (max-width: 768px) {
+    .day-header {
+        background: #795548;
+        color: white;
+        padding: 10px;
+        margin: 0;
+        text-align: center;
+        border-radius: 10px 10px 0 0;
+    }
+
+    .day-header .day-name {
+        font-weight: 500;
+        font-size: 1.1em;
+        margin-bottom: 5px;
+        border-bottom: 2px solid rgba(255, 255, 255, 0.479);
+        padding-bottom: 5px;
+    }
+
+    .day-header .date {
+        color: rgba(255, 255, 255, 0.692);
+        font-size: 0.85em;
+        padding-bottom: 5px;
+        font-weight: 500;
+    }
+}
+
+.waiter-tag span.loading {
+    opacity: 0.7;
+    font-style: italic;
+}
+
+/* עדכון הסגנון למסך מובייל */
+@media screen and (max-width: 768px) {
+    .login-container {
+        width: 100%;
+        margin: 0 auto;
+    }
+
+    .register-container {
+        width: 90%;
+        margin: 0 auto;
+    }
+}
+
+/* סגנונות בסיסיים */
+.login-container {
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.register-container {
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+/* הוספת סגנון ל-overlay */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5); /* רקע שחור שקוף */
+    z-index: 999; /* מתחת למודל */
+    backdrop-filter: blur(2px); /* אפקט טשטוש עדין */
+}
+
+/* עדכון ה-z-index של המודל */
+.success-modal {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    z-index: 1000; /* מעל ה-overlay */
+    text-align: center;
+    width: 85%;
+    max-width: 320px;
+}
+
+/* אנימציית קפיצה למלצר חדש */
+@keyframes waiterBounce {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+    75% { transform: scale(0.9); }
+    100% { transform: scale(1); }
+}
+
+.waiter-tag {
+    transition: transform 0.3s ease;
+}
+
+.waiter-bounce {
+    animation: waiterBounce 0.5s ease-in-out;
+}
+
+/* עדכון סגנון התגית של המלצר */
+.waiter-tag {
+    background: #f5f5f5;
+    padding: 5px 10px;
+    border-radius: 15px;
+    margin: 2px 0;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.male-section .waiter-tag {
+    border-right: 3px solid #2196F3;
+}
+
+.female-section .waiter-tag {
+    border-right: 3px solid #E91E63;
+}
+
+/* סידור המלצרים בסדר הפוך */
+.male-section, .female-section {
+    display: flex;
+    flex-direction: column;
 } 
