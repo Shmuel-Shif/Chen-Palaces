@@ -9,49 +9,54 @@ document.getElementById('userInfo').textContent = currentUser.name;
 
 // קבלת שם האולם מה-URL
 const urlParams = new URLSearchParams(window.location.search);
-const hallName = urlParams.get('name');
-document.getElementById('hallName').textContent = hallName.replace(/-/g, ' ');
+const hallName = urlParams.get('hall');
+
+// עדכון הצגת שם האולם
+const hallNameElement = document.getElementById('hallName');
+if (hallNameElement && hallName) {
+    hallNameElement.textContent = hallName.replace('אולם-', 'אולם ').replace('-', ' ');
+}
 
 // הגדרת מקסימום מלצרים ליום
 const MAX_WAITERS = 5;
 
 // הגדרת הגבלות לפי אולם וימים
 const HALL_LIMITS = {
-    'אולם-כלנית': {
-        'יום ראשון': { male: 1, female: 1 },
-        'יום שני': { male: 2, female: 2 },
-        'יום שלישי': { male: 8, female: 5 },
-        'יום רביעי': { male: 8, female: 5 },
-        'יום חמישי': { male: 8, female: 5 }
-    },
-    'אולם-רקפת': {
-        'יום ראשון': { male: 10, female: 6 },
-        'יום שני': { male: 8, female: 5 },
-        'יום שלישי': { male: 8, female: 5 },
-        'יום רביעי': { male: 8, female: 5 },
-        'יום חמישי': { male: 10, female: 6 }
-    },
-    'אולם-אירוסים': {
+    'אולם-בת-שבע': {
         'יום ראשון': { male: 12, female: 7 },
         'יום שני': { male: 10, female: 6 },
         'יום שלישי': { male: 10, female: 6 },
         'יום רביעי': { male: 10, female: 6 },
         'יום חמישי': { male: 12, female: 7 }
     },
-    'אולם-סחלב': {
-        'יום ראשון': { male: 10, female: 6 },
-        'יום שני': { male: 8, female: 5 },
-        'יום שלישי': { male: 8, female: 5 },
-        'יום רביעי': { male: 8, female: 5 },
-        'יום חמישי': { male: 10, female: 6 }
-    },
-    'אולם-נרקיס': {
-        'יום ראשון': { male: 15, female: 8 },
+    'אולם-שוהם': {
+        'יום ראשון': { male: 12, female: 7 },
         'יום שני': { male: 10, female: 6 },
-        'יום שלישי': { male: 12, female: 7 },
+        'יום שלישי': { male: 10, female: 6 },
         'יום רביעי': { male: 10, female: 6 },
-        'יום חמישי': { male: 15, female: 8 }
+        'יום חמישי': { male: 12, female: 7 }
     },
+    'אולם-ברקת': {
+        'יום ראשון': { male: 12, female: 7 },
+        'יום שני': { male: 10, female: 6 },
+        'יום שלישי': { male: 10, female: 6 },
+        'יום רביעי': { male: 10, female: 6 },
+        'יום חמישי': { male: 12, female: 7 }
+    },
+    'אולם-מרדכי': {
+        'יום ראשון': { male: 12, female: 7 },
+        'יום שני': { male: 10, female: 6 },
+        'יום שלישי': { male: 10, female: 6 },
+        'יום רביעי': { male: 10, female: 6 },
+        'יום חמישי': { male: 12, female: 7 }
+    },
+    'אולם-פרדו': {
+        'יום ראשון': { male: 12, female: 7 },
+        'יום שני': { male: 10, female: 6 },
+        'יום שלישי': { male: 10, female: 6 },
+        'יום רביעי': { male: 10, female: 6 },
+        'יום חמישי': { male: 12, female: 7 }
+    }
 };
 
 // הגדרת הגבלות לפי ימים - ברירת מחדל
@@ -490,4 +495,7 @@ const showLimitsEditor = (dayName, currentLimits) => {
 const closeLimitsModal = () => {
     document.getElementById('limitsModalOverlay').style.display = 'none';
     document.getElementById('limitsModal').style.display = 'none';
-}; 
+};
+
+// הוספת תכונת data-hall לגוף הדף
+document.body.setAttribute('data-hall', hallName); 

@@ -23,9 +23,9 @@ document.getElementById('logoutBtn').addEventListener('click', () => {
 });
 
 // מעבר לדף האולם הספציפי בלחיצה על כפתור
-document.querySelectorAll('.hall-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-        const hallName = btn.dataset.hall;
-        window.location.href = `hall.html?name=${hallName}`;
+document.querySelectorAll('.hall-btn').forEach(button => {
+    button.addEventListener('click', () => {
+        const hallName = button.dataset.hall;
+        window.location.href = `hall.html?hall=${encodeURIComponent(hallName)}`;
     });
 }); 

@@ -120,58 +120,58 @@ body {
     font-weight: 500;
 }
 
-/* צבעים ייחודיים לכל אולם */
-.hall-btn[data-hall="אולם-כלנית"] {
+/* הגדרות כפתורי האולמות */
+.hall-btn[data-hall="אולם-בת-שבע"] {
     background: linear-gradient(45deg, #2c3e50, #34495e);
     box-shadow: 0 4px 8px rgba(44, 62, 80, 0.2);
 }
 
-.hall-btn[data-hall="אולם-רקפת"] {
+.hall-btn[data-hall="אולם-שוהם"] {
     background: linear-gradient(45deg, #16a085, #1abc9c);
     box-shadow: 0 4px 8px rgba(22, 160, 133, 0.2);
 }
 
-.hall-btn[data-hall="אולם-אירוסים"] {
+.hall-btn[data-hall="אולם-ברקת"] {
     background: linear-gradient(45deg, #8e44ad, #9b59b6);
     box-shadow: 0 4px 8px rgba(142, 68, 173, 0.2);
 }
 
-.hall-btn[data-hall="אולם-סחלב"] {
+.hall-btn[data-hall="אולם-מרדכי"] {
     background: linear-gradient(45deg, #c0392b, #e74c3c);
     box-shadow: 0 4px 8px rgba(192, 57, 43, 0.2);
 }
 
-.hall-btn[data-hall="אולם-נרקיס"] {
+.hall-btn[data-hall="אולם-פרדו"] {
     background: linear-gradient(45deg, #2980b9, #3498db);
     box-shadow: 0 4px 8px rgba(41, 128, 185, 0.2);
 }
 
-/* אפקט hover לכפתורים */
-.hall-btn[data-hall="אולם-כלנית"]:hover {
+/* אפקט hover */
+.hall-btn[data-hall="אולם-בת-שבע"]:hover {
     background: linear-gradient(45deg, #34495e, #2c3e50);
     transform: translateY(-2px);
     box-shadow: 0 6px 12px rgba(44, 62, 80, 0.3);
 }
 
-.hall-btn[data-hall="אולם-רקפת"]:hover {
+.hall-btn[data-hall="אולם-שוהם"]:hover {
     background: linear-gradient(45deg, #1abc9c, #16a085);
     transform: translateY(-2px);
     box-shadow: 0 6px 12px rgba(22, 160, 133, 0.3);
 }
 
-.hall-btn[data-hall="אולם-אירוסים"]:hover {
+.hall-btn[data-hall="אולם-ברקת"]:hover {
     background: linear-gradient(45deg, #9b59b6, #8e44ad);
     transform: translateY(-2px);
     box-shadow: 0 6px 12px rgba(142, 68, 173, 0.3);
 }
 
-.hall-btn[data-hall="אולם-סחלב"]:hover {
+.hall-btn[data-hall="אולם-מרדכי"]:hover {
     background: linear-gradient(45deg, #e74c3c, #c0392b);
     transform: translateY(-2px);
     box-shadow: 0 6px 12px rgba(192, 57, 43, 0.3);
 }
 
-.hall-btn[data-hall="אולם-נרקיס"]:hover {
+.hall-btn[data-hall="אולם-פרדו"]:hover {
     background: linear-gradient(45deg, #3498db, #2980b9);
     transform: translateY(-2px);
     box-shadow: 0 6px 12px rgba(41, 128, 185, 0.3);
@@ -356,29 +356,48 @@ body {
     border-radius: 5px;
 }
 
-.assign-btn {
-    margin: 10px auto;
+/* עדכון סגנון הכפתור לפי צבעי האולם */
+[data-hall] .assign-btn {
+    background: var(--hall-primary);
     display: block;
     padding: 8px 20px;
-    border-radius: 5px;
-    background-color: #4CAF50;
     color: white;
     border: none;
     cursor: pointer;
-    transition: background-color 0.3s;
+    transition: all 0.3s ease;
+    border: 1px solid #000000;
 }
 
-.assign-btn:hover {
-    background-color: #45a049;
+[data-hall] .assign-btn:hover:not(:disabled) {
+    background: var(--hall-secondary);
+    transform: translateY(-1px);
 }
 
-.assign-btn:disabled {
-    background-color: #cccccc;
+[data-hall] .assign-btn:disabled {
+    background-color: #47ff6f;
     cursor: not-allowed;
 }
 
-.assign-btn.full {
+[data-hall] .assign-btn.full {
     background-color: #f44336;
+}
+
+/* עדכון גבולות התא */
+[data-hall] .schedule-table td {
+    border: 1px solid var(--hall-primary);
+    border-opacity: 0.1;
+    padding-top: 0;
+}
+
+/* עדכון רקע התא */
+[data-hall] .schedule-table td {
+    background: white;
+    box-shadow: 0 2px 4px var(--hall-shadow);
+}
+
+/* עדכון הפס התחתון של כותרת היום */
+[data-hall] .day-header .day-name {
+    border-bottom: 2px solid rgba(255, 255, 255, 0.3);
 }
 
 .waiters-list {
@@ -401,7 +420,7 @@ body {
     background: #795548;
     color: white;
     padding: 4px;
-    border: 1px solid #5D4037;
+    border: 1px solid #000000;
 }
 
 .success-modal {
@@ -673,14 +692,10 @@ body {
         padding: 0;
         margin-bottom: 15px;
         border-radius: 8px;
-        background: white;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
         overflow: hidden;
     }
 
     .schedule-table td .day-header {
-        background: #795548;
-        color: white;
         padding: 10px;
         margin: 0;
         text-align: center;
@@ -691,12 +706,10 @@ body {
         font-weight: 500;
         font-size: 1.1em;
         margin-bottom: 5px;
-        border-bottom: 2px solid rgba(255, 255, 255, 0.479);
         padding-bottom: 5px;
     }
 
     .schedule-table td .date {
-        color: rgba(255, 255, 255, 0.692);
         font-size: 0.85em;
         padding-bottom: 5px;
         font-weight: 500;
@@ -765,6 +778,7 @@ body {
     max-width: 1200px;
     margin: 0 auto;
     width: 100%;
+    padding-top: 100px;
 }
 
 .schedule-grid h1 {
@@ -872,7 +886,6 @@ body {
     padding: 15px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     margin: 0 10px;
-    border: 1px solid #5D4037;
 }
 
 .schedule-table td {
@@ -1140,8 +1153,6 @@ select:hover {
         padding: 0;
         margin-bottom: 15px;
         border-radius: 8px;
-        background: white;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
         overflow: hidden;
     }
 
@@ -1176,15 +1187,28 @@ select:hover {
         padding: 0;
         margin-bottom: 15px;
         border-radius: 8px;
-        background: white;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
         overflow: hidden;
     }
 
-    /* הסרת ה-pseudo elements */
-    .schedule-table td:before,
-    .schedule-table td:after {
-        display: none;
+    /* מחיקת הצבע הקבוע מה-day-header */
+    .schedule-table td .day-header {
+        padding: 10px;
+        margin: 0;
+        text-align: center;
+        border-radius: 10px 10px 0 0;
+    }
+
+    .schedule-table td .day-name {
+        font-weight: 500;
+        font-size: 1.1em;
+        margin-bottom: 5px;
+        padding-bottom: 5px;
+    }
+
+    .schedule-table td .date {
+        font-size: 0.85em;
+        padding-bottom: 5px;
+        font-weight: 500;
     }
 
     .waiters-list {
@@ -1416,8 +1440,6 @@ select:hover {
 
 @media screen and (max-width: 768px) {
     .day-header {
-        background: #795548;
-        color: white;
         padding: 10px;
         margin: 0;
         text-align: center;
@@ -1428,7 +1450,6 @@ select:hover {
         font-weight: 500;
         font-size: 1.1em;
         margin-bottom: 5px;
-        border-bottom: 2px solid rgba(255, 255, 255, 0.479);
         padding-bottom: 5px;
     }
 
@@ -1523,6 +1544,7 @@ select:hover {
     margin: 2px 0;
     display: flex;
     align-items: center;
+    justify-content: space-around;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
@@ -1538,4 +1560,168 @@ select:hover {
 .male-section, .female-section {
     display: flex;
     flex-direction: column;
+}
+
+/* הגדרת משתני צבע לכל אולם */
+:root {
+    /* אולם בת שבע */
+    --kallanit-primary: #2c3e50;
+    --kallanit-secondary: #34495e;
+    --kallanit-shadow: rgba(44, 62, 80, 0.2);
+
+    /* אולם שוהם */
+    --rakefet-primary: #16a085;
+    --rakefet-secondary: #1abc9c;
+    --rakefet-shadow: rgba(22, 160, 133, 0.2);
+
+    /* אולם ברקת */
+    --iris-primary: #8e44ad;
+    --iris-secondary: #9b59b6;
+    --iris-shadow: rgba(142, 68, 173, 0.2);
+
+    /* אולם מרדכי */
+    --orchid-primary: #c0392b;
+    --orchid-secondary: #e74c3c;
+    --orchid-shadow: rgba(192, 57, 43, 0.2);
+
+    /* אולם פרדו */
+    --narcis-primary: #2980b9;
+    --narcis-secondary: #3498db;
+    --narcis-shadow: rgba(41, 128, 185, 0.2);
+}
+
+/* סגנונות דינמיים לפי אולם */
+[data-hall="אולם-בת-שבע"] .schedule-container {
+    --hall-primary: var(--kallanit-primary);
+    --hall-secondary: var(--kallanit-secondary);
+    --hall-shadow: var(--kallanit-shadow);
+}
+
+[data-hall="אולם-שוהם"] .schedule-container {
+    --hall-primary: var(--rakefet-primary);
+    --hall-secondary: var(--rakefet-secondary);
+    --hall-shadow: var(--rakefet-shadow);
+}
+
+[data-hall="אולם-ברקת"] .schedule-container {
+    --hall-primary: var(--iris-primary);
+    --hall-secondary: var(--iris-secondary);
+    --hall-shadow: var(--iris-shadow);
+}
+
+[data-hall="אולם-מרדכי"] .schedule-container {
+    --hall-primary: var(--orchid-primary);
+    --hall-secondary: var(--orchid-secondary);
+    --hall-shadow: var(--orchid-shadow);
+}
+
+[data-hall="אולם-פרדו"] .schedule-container {
+    --hall-primary: var(--narcis-primary);
+    --hall-secondary: var(--narcis-secondary);
+    --hall-shadow: var(--narcis-shadow);
+}
+
+/* עיצוב הטבלה לפי צבעי האולם */
+.schedule-container {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px var(--hall-shadow);
+    overflow: hidden;
+}
+
+.schedule-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+}
+
+.schedule-table th {
+    background: linear-gradient(45deg, var(--hall-primary), var(--hall-secondary));
+    color: white;
+    padding: 15px;
+    text-align: center;
+}
+
+.day-header {
+    background: var(--hall-primary);
+    color: white;
+    padding: 10px;
+    margin: 0;
+    text-align: center;
+    border-radius: 10px 10px 0 0;
+}
+
+/* עיצוב כותרת וחץ חזרה */
+.hall-title {
+    color: var(--hall-primary);
+    font-size: 1.5em;
+    margin: 20px;
+    text-align: center;
+}
+
+.back-btn {
+    color: var(--hall-primary);
+    font-size: 1.5em;
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.back-btn:hover {
+    transform: translateX(5px);
+}
+
+/* עיצוב גבולות הטבלה */
+.schedule-table td {
+    border: 1px solid rgba(var(--hall-primary), 0.1);
+}
+
+/* עדכון צבעי הכותרת והחץ */
+[data-hall] #hallTitle {
+    color: var(--hall-primary);
+    margin: 20px;
+    text-align: center;
+}
+
+[data-hall] .icon-btn {
+    background: none;
+    border: none;
+    color: var(--hall-primary) !important;
+    font-size: 1.2em;
+    cursor: pointer;
+    padding: 5px;
+    transition: transform 0.3s ease;
+}
+
+[data-hall] #backBtn {
+    position: absolute;
+    right: -12px;
+    top: 15px;
+}
+
+/* עדכון סגנון הכותרת לפי צבעי האולם */
+[data-hall] .day-header {
+    background: var(--hall-primary) !important; /* שימוש ב-!important כדי לדרוס הגדרות אחרות */
+    color: white;
+    padding: 10px;
+    margin: 0;
+    text-align: center;
+    border-radius: 10px 10px 0 0;
+}
+
+[data-hall] .day-header .day-name {
+    font-weight: 500;
+    font-size: 1.1em;
+    margin-bottom: 5px;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+    padding-bottom: 5px;
+}
+
+[data-hall] .day-header .date {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.85em;
+    padding-bottom: 5px;
+    font-weight: 500;
 } 
