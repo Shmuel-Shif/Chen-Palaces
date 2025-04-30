@@ -1,4 +1,4 @@
-const CACHE_NAME = 'chen-palaces-cache-v1';
+const CACHE_NAME = 'chen-palaces-cache-v2';
 const urlsToCache = [
   '/harmonot-chen/',
   '/harmonot-chen/index.html',
@@ -52,5 +52,19 @@ self.addEventListener('fetch', event => {
           return response;
         });
       })
+  );
+});
+
+self.addEventListener('activate', event => {
+  event.waitUntil(
+    caches.keys().then(cacheNames => {
+      return Promise.all(
+        cacheNames.map(cacheName => {
+          if (cacheName !== CACHE_NAME) {
+            return caches.delete(cacheName);
+          }
+        })
+      );
+    })
   );
 }); 
