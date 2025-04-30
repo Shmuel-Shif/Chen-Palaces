@@ -231,16 +231,23 @@ const updateCell = (td, date, shifts, index) => {
     // עדכון כפתור
     const button = td.querySelector('.assign-btn');
     if (button) {
-        button.disabled = isGenderFull || isAssigned;
-        
-        if (isGenderFull && !isAssigned) {
+        if (isAssigned) {
+            button.disabled = false; // מאפשר לחיצה לביטול
+            button.classList.remove('full', 'assigned');
+            button.style.backgroundColor = '#64da53'; // צבע ירוק
+            button.style.color = '#000000'; // צבע טקסט שחור
+            button.textContent = 'בטל שיבוץ';
+        } else if (isGenderFull) {
+            button.disabled = true;
             button.classList.add('full');
+            button.style.backgroundColor = ''; // מסיר צבע מותאם אישית
+            button.style.color = ''; // מסיר צבע טקסט מותאם אישית
             button.textContent = 'אין מקום פנוי ✕';
-        } else if (isAssigned) {
-            button.classList.remove('full');
-            button.textContent = 'שובץ';
         } else {
+            button.disabled = false;
             button.classList.remove('full');
+            button.style.backgroundColor = ''; // מסיר צבע מותאם אישית
+            button.style.color = ''; // מסיר צבע טקסט מותאם אישית
             button.textContent = 'שבץ אותי';
         }
     }
@@ -295,11 +302,11 @@ const loadWeeklySchedule = async () => {
 
 // עדכון הטיפול בלחיצה על כפתור שיבוץ
 document.querySelector('.schedule-table').addEventListener('click', async (e) => {
-    if (!e.target.matches('.assign-btn') || e.target.disabled) return;
+    if (!e.target.matches('.assign-btn')) return;
     
     const dateStr = e.target.dataset.date;
     const gender = currentUser.gender.toLowerCase();
-    const clickedCell = e.target.closest('td'); // שמירת התא שבו לחצנו
+    const clickedCell = e.target.closest('td');
     
     try {
         // קבלת הרשימה הנוכחית של המלצרים
@@ -307,7 +314,20 @@ document.querySelector('.schedule-table').addEventListener('click', async (e) =>
         const snapshot = await shiftsRef.once('value');
         const currentWaiters = snapshot.val() ? Object.values(snapshot.val()) : [];
         
-        // בדיקת מגבלת מגדר
+        // בדיקה אם המלצר כבר משובץ
+        const isAssigned = currentWaiters.includes(currentUser.id);
+        
+        if (isAssigned) {
+            // ביטול השיבוץ
+            const updatedWaiters = currentWaiters.filter(id => id !== currentUser.id);
+            await shiftsRef.set(updatedWaiters);
+            
+            // טעינה מחדש של השיבוצים
+            loadWeeklySchedule();
+            return;
+        }
+        
+        // המשך הקוד הקיים לשיבוץ חדש
         const dayName = new Date(dateStr).toLocaleDateString('he-IL', { weekday: 'long' });
         const hallLimits = HALL_LIMITS[hallName] || DAILY_LIMITS;
         const limits = hallLimits[dayName] || { male: 8, female: 5 };
@@ -317,21 +337,18 @@ document.querySelector('.schedule-table').addEventListener('click', async (e) =>
         }
 
         // הוספת המלצר/ית בתחילת המערך
-        if (!currentWaiters.includes(currentUser.id)) {
-            await shiftsRef.set([currentUser.id, ...currentWaiters]);
-            
-            // הוספת אנימציה למלצר החדש בתא הספציפי
-            setTimeout(() => {
-                const newWaiterElement = clickedCell.querySelector(`[data-waiter-id="${currentUser.id}"]`);
-                if (newWaiterElement) {
-                    newWaiterElement.classList.add('waiter-bounce');
-                    // הסרת האנימציה אחרי שהיא מסתיימת
-                    setTimeout(() => {
-                        newWaiterElement.classList.remove('waiter-bounce');
-                    }, 500); // משך האנימציה
-                }
-            }, 100);
-        }
+        await shiftsRef.set([currentUser.id, ...currentWaiters]);
+        
+        // הוספת אנימציה למלצר החדש
+        setTimeout(() => {
+            const newWaiterElement = clickedCell.querySelector(`[data-waiter-id="${currentUser.id}"]`);
+            if (newWaiterElement) {
+                newWaiterElement.classList.add('waiter-bounce');
+                setTimeout(() => {
+                    newWaiterElement.classList.remove('waiter-bounce');
+                }, 500);
+            }
+        }, 100);
         
         // טעינה מחדש של השיבוצים
         loadWeeklySchedule();

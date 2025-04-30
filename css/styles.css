@@ -185,6 +185,10 @@ body {
 
 .login-page {
     min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
     background-color: #3E2723;
     background-image: 
         linear-gradient(30deg, rgba(93, 64, 55, 0.3) 12%, transparent 12.5%, transparent 87%, rgba(93, 64, 55, 0.3) 87.5%, rgba(93, 64, 55, 0.3)),
@@ -193,10 +197,6 @@ body {
         linear-gradient(150deg, rgba(93, 64, 55, 0.3) 12%, transparent 12.5%, transparent 87%, rgba(93, 64, 55, 0.3) 87.5%, rgba(93, 64, 55, 0.3));
     background-size: 160px 280px;
     background-position: 0 0, 0 0, 80px 140px, 80px 140px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
 }
 
 .login-container {
@@ -1724,4 +1724,12 @@ select:hover {
     font-size: 0.85em;
     padding-bottom: 5px;
     font-weight: 500;
+}
+
+.assigned {
+    background-color: #ff4444;
+}
+
+.assigned:hover {
+    background-color: #cc0000;
 } 
