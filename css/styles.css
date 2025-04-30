@@ -23,7 +23,6 @@ body {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    padding-top: 80px;
     background-color: rgba(238, 238, 238, 0.75);
     box-shadow: 0 0 20px rgba(93, 64, 55, 0.1);
     margin: 0;
@@ -1751,8 +1750,8 @@ select:hover {
 }
 
 .loader {
-    width: 120px;
-    height: 120px;
+    width: 60px;
+    height: 60px;
     position: relative;
     animation: pulse 1.5s ease-in-out infinite;
 }
@@ -1761,11 +1760,13 @@ select:hover {
     width: 100%;
     height: 100%;
     object-fit: contain;
+    max-width: 60px;
+    max-height: 60px;
 }
 
 .loader-text {
     color: #795548;
-    font-size: 18px;
+    font-size: 16px;
     font-weight: 500;
     text-align: center;
 }
