@@ -216,6 +216,7 @@ document.getElementById('regPassword').addEventListener('input', function(e) {
 document.getElementById('openTerms').addEventListener('click', (e) => {
     e.preventDefault();
     document.getElementById('termsModal').style.display = 'block';
+    document.querySelector('.terms-content').scrollTop = 0;
     document.body.style.overflow = 'hidden';
 });
 
