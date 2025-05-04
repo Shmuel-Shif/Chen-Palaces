@@ -715,9 +715,20 @@ async function executeMoveWaiter(waiterId, fromDate, gender) {
         return;
     }
 
-    const toDate = getNextDayDate(selectedDay, fromDate);
-
     try {
+        const toDate = getNextDayDate(selectedDay, fromDate);
+
+        // בדיקה אם המלצר כבר משובץ באותו יום באולם היעד בלבד
+        const targetShiftRef = database.ref(`shifts/${toHall}/${toDate}/${gender}`);
+        const snapshot = await targetShiftRef.once('value');
+        const existingWaiters = snapshot.val() || [];
+        
+        if (existingWaiters.includes(waiterId)) {
+            const hallDisplayName = toHall.replace('אולם-', '').replace('-', ' ');
+            throw new Error(`המלצר כבר משובץ ביום זה באולם ${hallDisplayName}`);
+        }
+
+        // אם הגענו לכאן, אפשר להעביר את המלצר
         await moveWaiter(waiterId, fromDate, gender, toHall, toDate);
         document.body.classList.remove('modal-open');
         document.querySelector('.move-dialog').remove();
@@ -727,8 +738,8 @@ async function executeMoveWaiter(waiterId, fromDate, gender) {
     }
 }
 
-// פונקציה לקבלת התאריך הבא של יום מסוים
-function getNextDayDate(dayName, fromDate) {
+// עדכון פונקציית getNextDayDate
+function getNextDayDate(targetDayName, fromDate) {
     const days = {
         'יום ראשון': 0,
         'יום שני': 1,
@@ -737,24 +748,35 @@ function getNextDayDate(dayName, fromDate) {
         'יום חמישי': 4
     };
 
+    // המרת התאריך לאובייקט Date
     const currentDate = new Date(fromDate);
-    const targetDay = days[dayName];
     const currentDay = currentDate.getDay();
     
-    let daysToAdd = targetDay - currentDay;
+    // מציאת יום ראשון של השבוע
+    const weekStart = new Date(currentDate);
+    weekStart.setDate(currentDate.getDate() - currentDay);
     
-    // אם מעבירים לאותו יום באולם אחר, נשאר באותו תאריך
-    if (daysToAdd === 0) {
-        return formatDate(currentDate);
+    // חישוב התאריך המבוקש
+    const targetDate = new Date(weekStart);
+    const targetDayNum = days[targetDayName];
+    
+    // בדיקת תקינות היום המבוקש
+    if (targetDayNum === undefined) {
+        throw new Error('יום לא חוקי');
     }
-    
-    // אחרת, אם היום הנבחר כבר עבר, קפוץ לשבוע הבא
-    if (daysToAdd < 0) {
-        daysToAdd += 7;
-    }
-    
-    const targetDate = new Date(currentDate);
-    targetDate.setDate(currentDate.getDate() + daysToAdd);
+
+    // הוספת מספר הימים מיום ראשון
+    targetDate.setDate(weekStart.getDate() + targetDayNum);
+
+    console.log('Date calculation:', {
+        fromDate,
+        currentDay,
+        targetDayName,
+        targetDayNum,
+        weekStart: formatDate(weekStart),
+        targetDate: formatDate(targetDate)
+    });
+
     return formatDate(targetDate);
 }
 

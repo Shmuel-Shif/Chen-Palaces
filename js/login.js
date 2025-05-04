@@ -48,58 +48,73 @@ document.querySelectorAll('.gender-option').forEach(option => {
 document.getElementById('registerForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     
+    const termsAccepted = document.getElementById('termsAccepted').checked;
+    if (!termsAccepted) {
+        showError('reg-error-message', 'יש לקרוא ולאשר את התקנון');
+        return;
+    }
+
     const fullName = document.getElementById('regFullName').value;
     const password = document.getElementById('regPassword').value;
-    const selectedGender = document.querySelector('.gender-option.selected');
+    const gender = document.querySelector('.gender-option.selected')?.dataset.value;
 
-    if (!/^\d{4}$/.test(password)) {
-        showError('reg-error-message', 'הסיסמה חייבת להכיל 4 ספרות בדיוק');
+    if (!fullName || !password || !gender) {
+        showError('reg-error-message', 'נא למלא את כל השדות');
         return;
     }
 
-    if (!selectedGender) {
-        showError('reg-error-message', 'יש לבחור מגדר');
-        return;
-    }
-
-    const gender = selectedGender.dataset.value;
-    
     try {
-        // בדיקה אם המשתמש כבר קיים
-        const waitersRef = database.ref('waiters');
+        const waitersRef = firebase.database().ref('waiters');
         const snapshot = await waitersRef.orderByChild('name').equalTo(fullName).once('value');
         
         if (snapshot.exists()) {
-            showError('reg-error-message', 'שם זה כבר קיים במערכת');
+            showError('reg-error-message', 'שם משתמש כבר קיים במערכת');
             return;
         }
 
-        // קבלת המספר הבא בסדרה
-        const counterRef = database.ref('counters/waiterId');
-        const counterSnapshot = await counterRef.once('value');
-        const currentCounter = counterSnapshot.val() || 0;
-        const nextCounter = currentCounter + 1;
+        // מציאת המספר הפנוי הנמוך ביותר
+        const allWaitersSnapshot = await waitersRef.once('value');
+        const existingIds = [];
         
-        // יצירת מזהה בפורמט החדש
-        const newWaiterId = `OP${nextCounter.toString().padStart(3, '0')}`;
-        
-        // שמירת פרטי המשתמש החדש
-        await waitersRef.child(newWaiterId).set({
-            id: newWaiterId,
-            name: fullName,
-            password: password,
-            gender: gender
+        allWaitersSnapshot.forEach(waiter => {
+            const id = waiter.key;
+            if (id.startsWith('OP')) {
+                const num = parseInt(id.substring(2));
+                existingIds.push(num);
+            }
         });
 
-        // עדכון המונה
-        await counterRef.set(nextCounter);
+        let nextNum = 1;
+        while (existingIds.includes(nextNum)) {
+            nextNum++;
+        }
 
-        // מעבר לדף ההתחברות
-        window.location.href = 'index.html';
+        const nextWaiterId = `OP${String(nextNum).padStart(3, '0')}`;
 
+        // שמירת המלצר בדאטאבייס
+        await waitersRef.child(nextWaiterId).set({
+            id: nextWaiterId,
+            name: fullName,
+            password: password,
+            gender: gender,
+            termsAccepted: true,
+            registrationDate: new Date().toISOString()
+        });
+
+        // שמירת פרטי המשתמש ב-localStorage
+        localStorage.setItem('currentUser', JSON.stringify({
+            id: nextWaiterId,
+            name: fullName,
+            gender: gender
+        }));
+
+        showSuccessModal(false);
+        setTimeout(() => {
+            window.location.href = 'dashboard.html';
+        }, 2000);
     } catch (error) {
-        console.error(error);
-        showError('reg-error-message', 'אירעה שגיאה בהרשמה');
+        console.error('Registration error:', error);
+        showError('reg-error-message', 'אירעה שגיאה בהרשמה, נסה שוב מאוחר יותר');
     }
 });
 
@@ -195,4 +210,16 @@ document.getElementById('password').addEventListener('input', function(e) {
 
 document.getElementById('regPassword').addEventListener('input', function(e) {
     this.value = this.value.replace(/\D/g, '').slice(0, 4);
+});
+
+// פתיחת וסגירת מודל התקנון
+document.getElementById('openTerms').addEventListener('click', (e) => {
+    e.preventDefault();
+    document.getElementById('termsModal').style.display = 'block';
+    document.body.style.overflow = 'hidden';
+});
+
+document.getElementById('closeTerms').addEventListener('click', () => {
+    document.getElementById('termsModal').style.display = 'none';
+    document.body.style.overflow = '';
 }); 

@@ -71,6 +71,14 @@
                     </div>
                 </div>
             </div>
+            <div class="form-group">
+                <div class="terms-checkbox">
+                    <input type="checkbox" id="termsAccepted">
+                    <label for="termsAccepted">
+                        קראתי ואני מסכים/ה ל<a href="#" id="openTerms">תקנון המערכת 👉🏻</a>
+                    </label>
+                </div>
+            </div>
             <div id="reg-error-message" class="error-message"></div>
             <button type="submit" class="submit-btn">הירשם</button>
             <p class="switch-form">כבר יש לך חשבון? <a href="#" id="showLogin">התחבר</a></p>
@@ -85,12 +93,56 @@
         <p>מועבר לדף הבית...</p>
     </div>
 
+    <!-- הוספת מודל התקנון -->
+    <div id="termsModal" class="terms-modal">
+        <div class="terms-content">
+            <h2>תקנון מלצרים - ארמונות חן</h2>
+            <div class="terms-text">
+                <h3>שעות ונהלי כניסה</h3>
+                <p>1. שעות עבודה: 18:30–23:00.</p>
+                <p>2. יש להיכנס לבניין אך ורק מצד החנייה.</p>
+                <p>3. הכניסה לבניין ולקומות תתבצע בלבוש צנוע: בנים עם חולצות עבודה, בנות עם חצאיות וחולצת עבודה.</p>
+                <p>4. לפני תחילת העבודה על כל העובדים ליטול ידיים.</p>
+                <p>5. לפני כניסה לאולם האירועים: בנים יחבשו כיפה, בנות יאספו את שיערן.</p>
+
+                <h3>נהלי עבודה במהלך האירוע</h3>
+                <p>6. אין להיכנס למקרר השתייה ללא רשות האחראי.</p>
+                <p>7. בזמן האירוע יש להימצא באולם.</p>
+                <p>8. לאחר המנה הראשונה יש למלא סלטים, שתייה ולחמניות, ולהיות זמינים ליד השולחנות.</p>
+                <p>9. אין לצאת להפסקה אלא באישור האחראי.</p>
+                <p>10. בהגשת המנה העיקרית, יש לעמוד בתור במטבח לתוספות – אין לעקוף או להידחף.</p>
+                <p>11. לאחר הגשת המנה העיקרית, יש להישאר ליד השולחנות ולתת שירות לאורחים.</p>
+
+                <h3>נהלי פינוי וסיום אירוע</h3>
+                <p>12. זמן הפינוי הוא בשעה 22:00. אין לגעת או להתחיל לפנות לפני כן.</p>
+                <p>13. אין להכניס עגלות פינוי לתוך האולם בשום אופן.</p>
+                <p>14. הפינוי יתבצע לפי רשימה מסודרת.</p>
+                <p>15. בעת הפינוי יש לשאול את האורחים אם ניתן לפנות את הצלחת.</p>
+                <p>16. בסיום הפינוי יש לפנות את הלחמניות והמפיות למקום המיועד לכך.</p>
+                <p>17. שתייה שנשארה על השולחנות תפונה לבר השתייה.</p>
+                <p>18. יש לפנות את כל הכלים המלוכלכים לפח.</p>
+                <p>19. אם יש צורך בקיפול שולחנות – הדבר יתבצע ביחד עם האחראי.</p>
+                <p>20. יש להרים כיסאות ולפנות את רחבת הריקודים.</p>
+                <p>21. את מפות השולחנות יש להניח בסלסלה שבמטבח.</p>
+
+                <h3>סיום משמרת</h3>
+                <p>22. אין להחליף בגדים במטבח – רק ביציאה למטה.</p>
+                <p>23. בגדי העבודה (חולצות וסינרים) יש להניח בסלסלות ביציאה למטה.</p>
+
+                <h3>ביטול משמרת</h3>
+                <p>24. מלצר שנרשם למשמרת ורוצה לבטל – חייב להודיע יום קודם ולמצוא מחליף מטעמו.</p>
+            </div>
+            <button id="closeTerms">סגור</button>
+        </div>
+    </div>
+
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
     <script src="js/firebase-config.js"></script>
     <script src="js/login.js"></script>
+    <script src="js/common.js"></script>
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
@@ -101,7 +153,7 @@
                     .catch(err => {
                         console.log('ServiceWorker registration failed: ', err);
                     });
-            });
+                                });
         }
     </script>
 </body>
