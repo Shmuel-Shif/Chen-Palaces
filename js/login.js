@@ -222,17 +222,4 @@ document.getElementById('openTerms').addEventListener('click', (e) => {
 document.getElementById('closeTerms').addEventListener('click', () => {
     document.getElementById('termsModal').style.display = 'none';
     document.body.style.overflow = '';
-});
-
-// עדכון נתיב ל-Service Worker
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/harmonot-chen/service-worker.js')
-        .then(registration => {
-            console.log('ServiceWorker registration successful');
-        })
-        .catch(err => {
-            console.log('ServiceWorker registration failed: ', err);
-        });
-    });
-} 
+}); 
