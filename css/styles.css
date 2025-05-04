@@ -2046,6 +2046,8 @@ body.modal-open::after {
 .terms-checkbox a {
     color: #3498db;
     text-decoration: none;
+    font-weight: 900;
+    font-size: 14px;
 }
 
 .terms-checkbox a:hover {
@@ -2151,4 +2153,12 @@ body.modal-open::after {
         padding: 10px;
         font-size: 16px;
     }
+}
+
+.password-hint {
+    display: block;
+    color: #666;
+    font-size: 0.8em;
+    margin-top: 4px;
+    text-align: right;
 } 

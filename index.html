@@ -55,7 +55,7 @@
                 <input type="text" id="regFullName" required>
             </div>
             <div class="form-group">
-                <label><i class="fas fa-lock"></i> סיסמה</label>
+                <label><i class="fas fa-lock"></i> סיסמה <small class="password-hint" style="display: inline; margin-right: 5px;">(יש להזין 4 ספרות בלבד)</small></label>
                 <input type="password" id="regPassword" maxlength="4" pattern="\d{4}" required>
             </div>
             <div class="form-group">
@@ -75,7 +75,7 @@
                 <div class="terms-checkbox">
                     <input type="checkbox" id="termsAccepted">
                     <label for="termsAccepted">
-                        קראתי ואני מסכים/ה ל<a href="#" id="openTerms">תקנון המערכת 👉🏻</a>
+                        קראתי ואני מסכים/ה ל<a href="#" id="openTerms">תקנון המערכת ➡️</a>
                     </label>
                 </div>
             </div>
@@ -146,14 +146,14 @@
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/harmonot-chen/service-worker.js')
+                navigator.serviceWorker.register('service-worker.js')
                     .then(registration => {
                         console.log('ServiceWorker registration successful');
                     })
                     .catch(err => {
                         console.log('ServiceWorker registration failed: ', err);
                     });
-                                });
+            });
         }
     </script>
 </body>
