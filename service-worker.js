@@ -1,20 +1,21 @@
 const CACHE_NAME = 'chen-palaces-cache-v2';
 const urlsToCache = [
-    '/harmonot-chen/',
-    '/harmonot-chen/index.html',
-    '/harmonot-chen/hall.html',
-    '/harmonot-chen/dashboard.html',
-    '/harmonot-chen/css/styles.css',
-    '/harmonot-chen/css/whatsapp-float.css',
-    '/harmonot-chen/js/firebase-config.js',
-    '/harmonot-chen/js/login.js',
-    '/harmonot-chen/js/hall.js',
-    '/harmonot-chen/js/dashboard.js',
-    '/harmonot-chen/js/common.js',
-    '/harmonot-chen/images/icon-192.png',
-    '/harmonot-chen/images/icon-512.png',
-    '/harmonot-chen/images/logo/logo.png',
-    '/harmonot-chen/manifest.json'
+    './',
+    './index.html',
+    './hall.html',
+    './dashboard.html',
+    './css/styles.css',
+    './css/whatsapp-float.css',
+    './js/firebase-config.js',
+    './js/login.js',
+    './js/hall.js',
+    './js/dashboard.js',
+    './js/common.js',
+    './images/icon-192.png',
+    './images/icon-512.png',
+    './images/logo/logo.png',
+    './manifest.json',
+    'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css'
 ];
 
 // התקנת Service Worker
