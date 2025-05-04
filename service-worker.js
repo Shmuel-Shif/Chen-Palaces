@@ -1,30 +1,27 @@
-const CACHE_NAME = 'harmonot-chen-v1';
+const CACHE_NAME = 'chen-palaces-cache-v2';
 const urlsToCache = [
-    '/',
-    '/index.html',
-    '/css/styles.css',
-    '/js/login.js',
-    '/js/common.js',
-    '/images/logo/logo.png',
-    '/images/icon-192.png',
-    '/images/icon-512.png',
-    'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css'
+    '/harmonot-chen/',
+    '/harmonot-chen/index.html',
+    '/harmonot-chen/hall.html',
+    '/harmonot-chen/dashboard.html',
+    '/harmonot-chen/css/styles.css',
+    '/harmonot-chen/css/whatsapp-float.css',
+    '/harmonot-chen/js/firebase-config.js',
+    '/harmonot-chen/js/login.js',
+    '/harmonot-chen/js/hall.js',
+    '/harmonot-chen/js/dashboard.js',
+    '/harmonot-chen/js/common.js',
+    '/harmonot-chen/images/icon-192.png',
+    '/harmonot-chen/images/icon-512.png',
+    '/harmonot-chen/images/logo/logo.png',
+    '/harmonot-chen/manifest.json'
 ];
 
 // התקנת Service Worker
 self.addEventListener('install', event => {
     event.waitUntil(
         caches.open(CACHE_NAME)
-            .then(cache => {
-                console.log('Opened cache');
-                return cache.addAll(urlsToCache.map(url => {
-                    // אם זה לא URL חיצוני, נוסיף את prefix של גיטהאב
-                    if (!url.startsWith('http')) {
-                        return '/harmonot-chen' + url;
-                    }
-                    return url;
-                }));
-            })
+            .then(cache => cache.addAll(urlsToCache))
     );
 });
 
@@ -43,12 +40,11 @@ self.addEventListener('fetch', event => {
 
 // עדכון גרסאות של ה-cache
 self.addEventListener('activate', event => {
-    const cacheWhitelist = [CACHE_NAME];
     event.waitUntil(
         caches.keys().then(cacheNames => {
             return Promise.all(
                 cacheNames.map(cacheName => {
-                    if (cacheWhitelist.indexOf(cacheName) === -1) {
+                    if (cacheName !== CACHE_NAME) {
                         return caches.delete(cacheName);
                     }
                 })
