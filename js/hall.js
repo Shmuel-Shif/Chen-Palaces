@@ -24,14 +24,14 @@ const MAX_WAITERS = 5;
 // הגדרת הגבלות לפי אולם וימים
 const HALL_LIMITS = {
     'אולם-בת-שבע': {
-        'יום ראשון': { male: 10, female: 4 },
+        'יום ראשון': { male: 3, female: 4 },
         'יום שני': { male: 10, female: 6 },
         'יום שלישי': { male: 10, female: 6 },
         'יום רביעי': { male: 10, female: 6 },
         'יום חמישי': { male: 12, female: 7 }
     },
     'אולם-שוהם': {
-        'יום ראשון': { male: 1, female: 1 },
+        'יום ראשון': { male: 10, female: 1 },
         'יום שני': { male: 10, female: 6 },
         'יום שלישי': { male: 10, female: 6 },
         'יום רביעי': { male: 10, female: 6 },
@@ -71,7 +71,17 @@ const DAILY_LIMITS = {
 
 // פונקציה ליצירת תאריך בפורמט YYYY-MM-DD
 const formatDate = (date) => {
-    return date.toISOString().split('T')[0];
+    const d = new Date(date);
+    // נוודא שאנחנו בזמן מקומי
+    d.setHours(0, 0, 0, 0);
+    
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    
+    const formattedDate = `${year}-${month}-${day}`;
+    
+    return formattedDate;
 };
 
 // פונקציה להמרת מספר לאותיות עבריות
@@ -335,15 +345,23 @@ const updateCell = (td, date, shifts, index) => {
 // פונקציה למציאת יום ראשון של השבוע הנוכחי
 const getCurrentSunday = (date) => {
     const today = new Date(date);
+    
+    // נוודא שאנחנו עובדים עם תאריך בזמן מקומי
+    today.setHours(0, 0, 0, 0);
+    
     const currentDay = today.getDay(); // 0 = ראשון, 6 = שבת
     
-    // נחזור אחורה ליום ראשון של השבוע הנוכחי
-    today.setDate(today.getDate() - currentDay);
-    
-    // אם היום שישי או שבת, נקפוץ ליום ראשון הבא
-    if (currentDay === 5 || currentDay === 6) { // שישי או שבת
-        today.setDate(today.getDate() + 7); // קפיצה לשבוע הבא
+    // אם היום הוא שישי או שבת
+    if (currentDay === 5 || currentDay === 6) {
+        // מחשבים כמה ימים להוסיף כדי להגיע ליום ראשון הבא
+        const daysToAdd = 7 - currentDay;
+        today.setDate(today.getDate() + daysToAdd);
+    } else {
+        // אחרת, חוזרים אחורה ליום ראשון של השבוע הנוכחי
+        today.setDate(today.getDate() - currentDay);
     }
+
+    // בדיקת תקינות התאריך
     
     return today;
 };
@@ -355,22 +373,12 @@ const loadWeeklySchedule = async () => {
     const sunday = getCurrentSunday(today);
     
     try {
-        // טעינת כל השיבוצים מהפיירבייס
         const shiftsRef = database.ref(`shifts/${hallName}`);
         const shiftsSnapshot = await shiftsRef.once('value');
         let shifts = {};
 
-        // המרה נכונה של הנתונים
         if (shiftsSnapshot.exists()) {
-            const data = shiftsSnapshot.val();
-            Object.keys(data).forEach(date => {
-                shifts[date] = {
-                    male: data[date]?.male ? 
-                        (Array.isArray(data[date].male) ? data[date].male : Object.values(data[date].male)) : [],
-                    female: data[date]?.female ? 
-                        (Array.isArray(data[date].female) ? data[date].female : Object.values(data[date].female)) : []
-                };
-            });
+            shifts = shiftsSnapshot.val();
         }
 
         // עדכון כל התאים
@@ -380,10 +388,9 @@ const loadWeeklySchedule = async () => {
             const dateStr = formatDate(date);
             
             // עדכון התאריך בכותרת
-            const formattedDate = formatFullDate(date);
             const dateHeader = document.getElementById(`date-${index}`);
             if (dateHeader) {
-                dateHeader.innerHTML = formattedDate;
+                dateHeader.innerHTML = formatFullDate(date);
             }
 
             // וידוא שיש מערכים תקינים גם אם אין נתונים
@@ -395,7 +402,7 @@ const loadWeeklySchedule = async () => {
         });
 
         // האזנה לשינויים בזמן אמת
-        shiftsRef.off(); // מבטל האזנות קודמות
+        shiftsRef.off();
         shiftsRef.on('value', (snapshot) => {
             const updatedShifts = snapshot.val() || {};
             cells.forEach((td, index) => {
@@ -642,6 +649,12 @@ async function moveWaiter(waiterId, fromDate, fromGender, toHall, toDate) {
     let targetWaiters = toSnapshot.exists() ? 
         (Array.isArray(toSnapshot.val()) ? toSnapshot.val() : Object.values(toSnapshot.val())) : [];
 
+    // בדיקה אם המלצר כבר קיים ביום היעד
+    if (targetWaiters.includes(waiterId)) {
+        throw new Error('לא ניתן להעביר - המלצר כבר משובץ ביום זה');
+    }
+
+    // בדיקת מגבלת מלצרים
     if (targetWaiters.length >= targetLimits[fromGender]) {
         throw new Error(`אין מקום פנוי ל${fromGender === 'male' ? 'גברים' : 'נשים'} ביעד (${targetWaiters.length}/${targetLimits[fromGender]})`);
     }
@@ -668,17 +681,16 @@ async function moveWaiter(waiterId, fromDate, fromGender, toHall, toDate) {
     await loadWeeklySchedule();
 }
 
-// פונקציה להצגת דיאלוג העברה
-function showMoveDialog(waiterId, fromDate, gender) {
-    document.body.classList.add('modal-open');
-    
+// פונקציה להצגת מודל החלפת מלצרים
+const showMoveDialog = async (waiterId, fromDate, gender) => {
     const dialog = document.createElement('div');
     dialog.className = 'move-dialog';
     dialog.innerHTML = `
+        <h3>העברת מלצר</h3>
         <select id="moveToHall">
             <option value="">בחר אולם</option>
             ${Object.keys(HALL_LIMITS).map(hall => 
-                `<option value="${hall}">
+                `<option value="${hall}" ${hall === hallName ? 'selected' : ''}>
                     ${hall.replace('אולם-', 'אולם ').replace('-', ' ')}
                 </option>`
             ).join('')}
@@ -689,54 +701,215 @@ function showMoveDialog(waiterId, fromDate, gender) {
                 `<option value="${day}">${day}</option>`
             ).join('')}
         </select>
+        <div class="waiters-list-container" style="display: none;">
+            <p>בחר מלצר להחלפה:</p>
+            <select id="waiterToSwapWith">
+                <option value="">-- בחר מלצר --</option>
+            </select>
+        </div>
         <div class="dialog-buttons">
-            <button onclick="executeMoveWaiter('${waiterId}', '${fromDate}', '${gender}')">העבר</button>
-            <button onclick="closeDialog(this)">ביטול</button>
+            <button id="confirmMove">העבר</button>
+            <button id="cancelMove">ביטול</button>
         </div>
     `;
 
     document.body.appendChild(dialog);
-    document.getElementById('moveToHall').value = hallName;
-}
+    document.body.classList.add('modal-open');
 
-// פונקציה לסגירת הדיאלוג
-function closeDialog(element) {
-    document.body.classList.remove('modal-open');
-    element.closest('.move-dialog').remove();
-}
+    // טיפול בשינוי יום
+    const daySelect = dialog.querySelector('#moveToDay');
+    daySelect.addEventListener('change', async () => {
+        const selectedDay = daySelect.value;
+        const selectedHall = dialog.querySelector('#moveToHall').value;
+        if (!selectedDay || !selectedHall) return;
 
-// עדכון פונקציית executeMoveWaiter
-async function executeMoveWaiter(waiterId, fromDate, gender) {
-    const toHall = document.getElementById('moveToHall').value;
-    const selectedDay = document.getElementById('moveToDay').value;
-
-    if (!toHall || !selectedDay) {
-        showToast('נא לבחור אולם ויום', 'error');
-        return;
-    }
-
-    try {
-        const toDate = getNextDayDate(selectedDay, fromDate);
-
-        // בדיקה אם המלצר כבר משובץ באותו יום באולם היעד בלבד
-        const targetShiftRef = database.ref(`shifts/${toHall}/${toDate}/${gender}`);
-        const snapshot = await targetShiftRef.once('value');
-        const existingWaiters = snapshot.val() || [];
+        const targetDate = getNextDayDate(selectedDay, fromDate);
+        const waitersContainer = dialog.querySelector('.waiters-list-container');
+        const waiterSelect = dialog.querySelector('#waiterToSwapWith');
         
-        if (existingWaiters.includes(waiterId)) {
-            const hallDisplayName = toHall.replace('אולם-', '').replace('-', ' ');
-            throw new Error(`המלצר כבר משובץ ביום זה באולם ${hallDisplayName}`);
+        try {
+            // קבלת המלצרים מהיום הנבחר
+            const targetRef = database.ref(`shifts/${selectedHall}/${targetDate}/${gender}`);
+            const snapshot = await targetRef.once('value');
+            const existingWaiters = snapshot.val() || [];
+            
+            // בדיקת מגבלות
+            const limits = HALL_LIMITS[selectedHall][selectedDay][gender];
+            const isFull = existingWaiters.length >= limits;
+
+            if (isFull) {
+                // אם מלא, מציג את רשימת המלצרים להחלפה
+                waitersContainer.style.display = 'block';
+                waiterSelect.innerHTML = '<option value=""> בחר מלצר להחלפה </option>';
+                
+                // מילוי רשימת המלצרים
+                for (const targetWaiterId of existingWaiters) {
+                    const waiterSnapshot = await database.ref(`waiters/${targetWaiterId}`).once('value');
+                    const waiterData = waiterSnapshot.val();
+                    if (waiterData) {
+                        waiterSelect.innerHTML += `
+                            <option value="${targetWaiterId}">${waiterData.name}</option>
+                        `;
+                    }
+                }
+            } else {
+                // אם יש מקום, מסתיר את אפשרות ההחלפה
+                waitersContainer.style.display = 'none';
+            }
+        } catch (error) {
+            console.error('Error loading waiters:', error);
+            showToast('אירעה שגיאה בטעינת המלצרים', 'error');
+        }
+    });
+
+    // טיפול בכפתור האישור
+    dialog.querySelector('#confirmMove').addEventListener('click', async () => {
+        const selectedHall = dialog.querySelector('#moveToHall').value;
+        const selectedDay = dialog.querySelector('#moveToDay').value;
+        const selectedWaiter = dialog.querySelector('#waiterToSwapWith').value;
+        
+        if (!selectedHall || !selectedDay) {
+            showToast('נא לבחור אולם ויום', 'error');
+            return;
         }
 
-        // אם הגענו לכאן, אפשר להעביר את המלצר
-        await moveWaiter(waiterId, fromDate, gender, toHall, toDate);
-        document.body.classList.remove('modal-open');
-        document.querySelector('.move-dialog').remove();
-        showToast('המלצר הועבר בהצלחה', 'success');
-    } catch (error) {
-        showToast(error.message || 'אירעה שגיאה בהעברת המלצר', 'error');
+        try {
+            const targetDate = getNextDayDate(selectedDay, fromDate);
+            
+            // בדיקת מגבלות
+            const limits = HALL_LIMITS[selectedHall][selectedDay][gender];
+            const targetRef = database.ref(`shifts/${selectedHall}/${targetDate}/${gender}`);
+            const snapshot = await targetRef.once('value');
+            const existingWaiters = snapshot.val() || [];
+
+            // בדיקה אם המלצר כבר קיים ביום היעד
+            if (existingWaiters.includes(waiterId)) {
+                showToast('לא ניתן להעביר - המלצר כבר משובץ ביום זה', 'error');
+                return; // יוצאים מהפונקציה בלי לבצע שינויים
+            }
+
+            const isFull = existingWaiters.length >= limits;
+
+            if (isFull && !selectedWaiter) {
+                showToast('נא לבחור מלצר להחלפה', 'error');
+                return;
+            }
+
+            if (isFull) {
+                // החלפה עם המלצר הנבחר - מעבירים גם את fromDate
+                await swapWaiters(targetDate, waiterId, selectedWaiter, gender, selectedHall, fromDate);
+            } else {
+                // הסרה מהמקור
+                await removeWaiter(waiterId, fromDate, gender);
+                // הוספה ליום החדש
+                await addWaiter(waiterId, targetDate, gender, selectedHall);
+            }
+
+            showToast('המלצר הועבר בהצלחה', 'success');
+            closeDialog(dialog);
+            loadWeeklySchedule();
+        } catch (error) {
+            console.error('Error moving waiter:', error);
+            showToast(error.message || 'אירעה שגיאה בהעברת המלצר', 'error');
+        }
+    });
+
+    // טיפול בכפתור הביטול
+    dialog.querySelector('#cancelMove').addEventListener('click', () => {
+        closeDialog(dialog);
+    });
+};
+
+// פונקציות עזר
+const closeDialog = (dialog) => {
+    document.body.classList.remove('modal-open');
+    dialog.remove();
+};
+
+const addWaiter = async (waiterId, date, gender, targetHall) => {
+    const shiftsRef = database.ref(`shifts/${targetHall}/${date}/${gender}`);
+    const snapshot = await shiftsRef.once('value');
+    const currentWaiters = snapshot.val() || [];
+
+    // בדיקה אם המלצר כבר קיים ביום זה
+    if (currentWaiters.includes(waiterId)) {
+        throw new Error('לא ניתן להעביר - המלצר כבר משובץ ביום זה');
     }
-}
+
+    // בדיקת מגבלת מלצרים
+    const targetDay = new Date(date).toLocaleDateString('he-IL', { weekday: 'long' });
+    const limits = HALL_LIMITS[targetHall][targetDay];
+    
+    if (currentWaiters.length >= limits[gender]) {
+        throw new Error(`אין מקום פנוי ל${gender === 'male' ? 'גברים' : 'נשים'} ביום זה (${currentWaiters.length}/${limits[gender]})`);
+    }
+
+    await shiftsRef.set([...currentWaiters, waiterId]);
+};
+
+const swapWaiters = async (targetDate, waiter1Id, waiter2Id, gender, targetHall, fromDate) => {
+    try {
+        console.log('Swapping waiters:', {
+            fromDate,
+            targetDate,
+            waiter1Id,
+            waiter2Id,
+            gender,
+            fromHall: hallName,
+            toHall: targetHall
+        });
+
+        // קבלת המלצרים מהיום המקורי
+        const sourceRef = database.ref(`shifts/${hallName}/${fromDate}/${gender}`);
+        const sourceSnapshot = await sourceRef.once('value');
+        let sourceWaiters = sourceSnapshot.val() || [];
+
+        // קבלת המלצרים מהיום היעד
+        const targetRef = database.ref(`shifts/${targetHall}/${targetDate}/${gender}`);
+        const targetSnapshot = await targetRef.once('value');
+        let targetWaiters = targetSnapshot.val() || [];
+
+        // בדיקה אם המלצר כבר קיים ביום היעד
+        if (targetWaiters.includes(waiter1Id)) {
+            throw new Error('לא ניתן להעביר - המלצר כבר משובץ ביום זה');
+        }
+
+        // בדיקה אם המלצר השני כבר קיים ביום המקור
+        if (sourceWaiters.includes(waiter2Id)) {
+            throw new Error('לא ניתן להחליף - המלצר השני כבר משובץ ביום זה');
+        }
+
+        console.log('Before swap:', {
+            sourceWaiters,
+            targetWaiters
+        });
+
+        // מחיקת המלצרים מהמערכים המקוריים
+        sourceWaiters = sourceWaiters.filter(id => id !== waiter1Id);
+        targetWaiters = targetWaiters.filter(id => id !== waiter2Id);
+
+        // הוספת כל מלצר למקום החדש שלו
+        sourceWaiters.push(waiter2Id);
+        targetWaiters.push(waiter1Id);
+
+        console.log('After swap:', {
+            sourceWaiters,
+            targetWaiters
+        });
+
+        // שמירת השינויים בשני המקומות
+        const updates = {};
+        updates[`shifts/${hallName}/${fromDate}/${gender}`] = sourceWaiters.length > 0 ? sourceWaiters : null;
+        updates[`shifts/${targetHall}/${targetDate}/${gender}`] = targetWaiters.length > 0 ? targetWaiters : null;
+
+        await database.ref().update(updates);
+        await loadWeeklySchedule();
+
+    } catch (error) {
+        console.error('Error in swapWaiters:', error);
+        throw error;
+    }
+};
 
 // עדכון פונקציית getNextDayDate
 function getNextDayDate(targetDayName, fromDate) {
@@ -767,15 +940,6 @@ function getNextDayDate(targetDayName, fromDate) {
 
     // הוספת מספר הימים מיום ראשון
     targetDate.setDate(weekStart.getDate() + targetDayNum);
-
-    console.log('Date calculation:', {
-        fromDate,
-        currentDay,
-        targetDayName,
-        targetDayNum,
-        weekStart: formatDate(weekStart),
-        targetDate: formatDate(targetDate)
-    });
 
     return formatDate(targetDate);
 }

@@ -39,7 +39,7 @@ body {
     top: 0;
     left: 0;
     right: 0;
-    z-index: 1000;
+    z-index: 999;
     border-radius: 0;
 }
 
@@ -1802,7 +1802,7 @@ select:hover {
     font-weight: 900;
 }
 
-/* מודל העברת מלצר - עיצוב חדש */
+/* מודל העברת מלצר - החזרת העיצוב הקודם */
 .move-dialog {
     position: fixed;
     top: 50%;
@@ -1812,10 +1812,21 @@ select:hover {
     padding: 20px;
     border-radius: 12px;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-    z-index: 1001; /* העלאת ה-z-index */
+    z-index: 1001;
     width: 280px;
     direction: rtl;
     color: white;
+}
+
+.move-dialog h3 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.move-dialog p {
+    text-align: center;
+    margin-bottom: 15px;
+    font-weight: 500;
 }
 
 /* רקע מטושטש */
@@ -1830,24 +1841,6 @@ select:hover {
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
     z-index: -1;
-}
-
-/* הוספת שכבת רקע נוספת לכל העמוד */
-body.modal-open {
-    overflow: hidden;
-}
-
-body.modal-open::after {
-    content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
-    z-index: 1000;
 }
 
 /* תיבות בחירה */
@@ -1892,22 +1885,22 @@ body.modal-open::after {
 }
 
 /* כפתור העברה */
-.move-dialog button:first-child {
+.move-dialog #confirmMove {
     background: #3498db;
     color: white;
 }
 
-.move-dialog button:first-child:hover {
+.move-dialog #confirmMove:hover {
     background: #2980b9;
 }
 
 /* כפתור ביטול */
-.move-dialog button:last-child {
+.move-dialog #cancelMove {
     background: rgba(255, 255, 255, 0.1);
     color: white;
 }
 
-.move-dialog button:last-child:hover {
+.move-dialog #cancelMove:hover {
     background: rgba(255, 255, 255, 0.2);
 }
 
@@ -1925,6 +1918,25 @@ body.modal-open::after {
         opacity: 1;
         transform: translate(-50%, -50%);
     }
+}
+
+/* תיקון z-index של ההדר */
+.main-header {
+    z-index: 999;
+}
+
+/* רקע כהה */
+body.modal-open::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    z-index: 1000;
 }
 
 /* Toast notifications */
