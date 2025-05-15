@@ -184,7 +184,13 @@ const updateCell = (td, date, shifts, index) => {
     // בדיקה אם היום לא פעיל
     if (dayLimits.inactive) {
         td.className = 'inactive';
-        td.innerHTML = '<div class="no-event">אין אירוע</div>';
+        td.innerHTML = `
+            <div class="day-header">
+                <div class="day-name">${dayName}</div>
+                <div class="date">${formatFullDate(date)}</div>
+            </div>
+            <div class="no-event">אין אירוע</div>
+        `;
         return;
     }
 

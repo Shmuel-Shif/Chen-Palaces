@@ -2496,34 +2496,16 @@ body.modal-open::after {
 .schedule-table td.inactive {
     background-color: #f5f5f5;
     position: relative;
+    min-height: 100px; /* מינימום גובה כדי שיהיה מקום לכל המידע */
 }
 
-.schedule-table td.inactive::after {
-    content: 'אין אירוע';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    color: #666;
+.schedule-table td.inactive .day-header {
+    opacity: 0.7; /* קצת יותר שקוף להדגיש שזה לא פעיל */
+}
+
+.no-event {
+    color: #7a7a7a;
     font-style: italic;
+    padding: 20px 0;
+    text-align: center;
 }
-
-.schedule-table td.inactive .assign-btn,
-.schedule-table td.inactive .waiters-list {
-    display: none;
-}
-
-.active-toggle {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 0.9em;
-    color: #666;
-}
-
-.active-toggle input {
-    margin: 0;
-    width: 16px;
-    height: 16px;
-}
-
