@@ -178,8 +178,17 @@ async function removeWaiter(waiterId, date, gender) {
 
 // עדכון התא
 const updateCell = (td, date, shifts, index) => {
+    const dayName = ['יום ראשון', 'יום שני', 'יום שלישי', 'יום רביעי', 'יום חמישי'][index];
+    const dayLimits = HALL_LIMITS[hallName]?.[dayName] || { male: 8, female: 5 };
+
+    // בדיקה אם היום לא פעיל
+    if (dayLimits.inactive) {
+        td.className = 'inactive';
+        td.innerHTML = '<div class="no-event">אין אירוע</div>';
+        return;
+    }
+
     const dateStr = formatDate(date);
-    const dayName = date.toLocaleDateString('he-IL', { weekday: 'long' });
     
     // קבלת המגבלות הספציפיות לאולם
     const hallLimits = HALL_LIMITS[hallName] || DAILY_LIMITS;
@@ -243,7 +252,7 @@ const updateCell = (td, date, shifts, index) => {
                 return;
             }
 
-            // טיפול במלצרים רגילים
+            // טיפול בכל המלצרים
             const snapshot = await database.ref(`waiters/${waiterId}`).once('value');
             const waiterData = snapshot.val();
             
@@ -437,7 +446,15 @@ document.querySelector('.schedule-table').addEventListener('click', async (e) =>
             // ביטול השיבוץ
             const updatedWaiters = currentWaiters.filter(id => id !== currentUser.id);
             await shiftsRef.set(updatedWaiters);
+            showToast('השיבוץ בוטל בהצלחה', 'warning');
         } else {
+            // בדיקה אם המלצר כבר משובץ באולם אחר באותו יום
+            const assignmentCheck = await isWaiterAssignedOnDay(currentUser.id, dateStr);
+            if (assignmentCheck.isAssigned) {
+                showToast(`לא ניתן להשתבץ - כבר משובץ באולם ${assignmentCheck.hallName} ביום זה`, 'error');
+                return;
+            }
+
             // שיבוץ חדש
             const dayName = new Date(dateStr).toLocaleDateString('he-IL', { weekday: 'long' });
             const limits = HALL_LIMITS[hallName][dayName];
@@ -448,6 +465,7 @@ document.querySelector('.schedule-table').addEventListener('click', async (e) =>
 
             // הוספת המלצר/ית
             await shiftsRef.set([currentUser.id, ...currentWaiters]);
+            showToast('השיבוץ בוצע בהצלחה', 'success');
         }
         
         // טעינה מחדש של השיבוצים
@@ -455,9 +473,13 @@ document.querySelector('.schedule-table').addEventListener('click', async (e) =>
         
     } catch (error) {
         console.error('Error in assignment:', error);
-        const errorElement = clickedCell.querySelector('.error-message');
-        errorElement.textContent = error.message || 'אירעה שגיאה בשיבוץ';
-        setTimeout(() => errorElement.textContent = '', 3000);
+        if (error.isCustomError) {
+            showToast(error.message, 'error');
+        } else {
+            const errorElement = clickedCell.querySelector('.error-message');
+            errorElement.textContent = error.message || 'אירעה שגיאה בשיבוץ';
+            setTimeout(() => errorElement.textContent = '', 3000);
+        }
     }
 });
 
@@ -620,12 +642,24 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.querySelector('.schedule-container').style.display = 'none';
     
     try {
-        // טעינת כל הנתונים
+        // קודם כל טוען את ההגבלות
+        await loadHallLimits();
+        
+        // ואז את הלוח
         await loadWeeklySchedule();
         
         // מציג את תוכן הדף ומסתיר את הלוודר
         document.querySelector('.schedule-container').style.display = 'block';
         document.getElementById('pageLoader').style.display = 'none';
+
+        if (currentUser.isAdmin) {
+            const headerRight = document.querySelector('.header-right');
+            const settingsBtn = document.createElement('button');
+            settingsBtn.className = 'icon-btn';
+            settingsBtn.innerHTML = '<i class="fas fa-cog"></i>';
+            settingsBtn.onclick = showHallSettings;
+            headerRight.insertBefore(settingsBtn, headerRight.firstChild);
+        }
     } catch (error) {
         console.error('Error loading data:', error);
         // במקרה של שגיאה, עדיין נסתיר את הלוודר
@@ -744,7 +778,7 @@ const showMoveDialog = async (waiterId, fromDate, gender) => {
                 
                 // מילוי רשימת המלצרים
                 for (const targetWaiterId of existingWaiters) {
-                    const waiterSnapshot = await database.ref(`waiters/${targetWaiterId}`).once('value');
+                    const waiterSnapshot = await database.ref(`workers/${targetWaiterId}`).once('value');
                     const waiterData = waiterSnapshot.val();
                     if (waiterData) {
                         waiterSelect.innerHTML += `
@@ -967,4 +1001,274 @@ function showToast(message, type = 'info') {
             container.remove();
         }
     }, 3000);
+}
+
+// פונקציה לבדיקה אם המלצר כבר משובץ ביום מסוים באולם אחר
+async function isWaiterAssignedOnDay(waiterId, date) {
+    try {
+        const halls = ['אולם-בת-שבע', 'אולם-שוהם', 'אולם-ברקת', 'אולם-מרדכי', 'אולם-פרדו'];
+        const gender = currentUser.gender.toLowerCase();
+        
+        // בדיקת כל האולמות
+        for (const hall of halls) {
+            // דילוג על האולם הנוכחי
+            if (hall === hallName) continue;
+
+            const ref = database.ref(`shifts/${hall}/${date}/${gender}`);
+            const snapshot = await ref.once('value');
+            const data = snapshot.val();
+
+            // אם יש נתונים ויש מערך, בודקים אם המלצר נמצא בו
+            if (data) {
+                if (Array.isArray(data) && data.includes(waiterId)) {
+                    // מחזירים אובייקט עם המידע
+                    return {
+                        isAssigned: true,
+                        hallName: hall.replace('אולם-', '') // מסירים את המילה "אולם-" מהשם
+                    };
+                }
+            }
+        }
+        
+        return { isAssigned: false };
+
+    } catch (error) {
+        console.error('Error in isWaiterAssignedOnDay:', error);
+        return { isAssigned: false };
+    }
+}
+
+// הוספת האזנה ללחיצה על מגבלות המלצרים
+document.addEventListener('click', async (e) => {
+    // בדיקה אם זה אדמין ואם לחץ על מגבלת מלצרים
+    if (currentUser.isAdmin && (e.target.matches('.waiters-limit') || e.target.closest('.waiters-limit'))) {
+        const gender = e.target.closest('.waiters-limit').dataset.gender;
+        const currentLimit = HALL_LIMITS[hallName][getCurrentDayName()][gender];
+        
+        // יצירת דיאלוג להגדרת מגבלות
+        const dialog = document.createElement('div');
+        dialog.className = 'modal';
+        dialog.innerHTML = `
+            <div class="modal-content">
+                <h3>הגדרת מגבלת מלצרים</h3>
+                <p>הגדר מספר מקסימלי של ${gender === 'male' ? 'מלצרים' : 'מלצריות'} ל${getCurrentDayName()}</p>
+                <input type="number" id="limitInput" value="${currentLimit}" min="0" max="20">
+                <div class="modal-buttons">
+                    <button class="save-btn">שמור</button>
+                    <button class="cancel-btn">ביטול</button>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(dialog);
+
+        // הוספת האזנה לכפתורים
+        dialog.querySelector('.save-btn').addEventListener('click', async () => {
+            const newLimit = parseInt(dialog.querySelector('#limitInput').value);
+            if (isNaN(newLimit) || newLimit < 0) {
+                showToast('נא להזין מספר חיובי', 'error');
+                return;
+            }
+
+            try {
+                // עדכון המגבלה בפיירבייס
+                await database.ref(`halls/${hallName}/limits/${getCurrentDayName()}/${gender}`).set(newLimit);
+                showToast('המגבלה עודכנה בהצלחה', 'success');
+                
+                // עדכון המגבלה בזיכרון
+                HALL_LIMITS[hallName][getCurrentDayName()][gender] = newLimit;
+                
+                // עדכון התצוגה
+                updateLimitsDisplay();
+            } catch (error) {
+                console.error('Error updating limit:', error);
+                showToast('אירעה שגיאה בעדכון המגבלה', 'error');
+            }
+
+            dialog.remove();
+        });
+
+        dialog.querySelector('.cancel-btn').addEventListener('click', () => {
+            dialog.remove();
+        });
+    }
+});
+
+// פונקציה לעדכון תצוגת המגבלות
+function updateLimitsDisplay() {
+    const maleLimitElement = document.querySelector('.waiters-limit[data-gender="male"]');
+    const femaleLimitElement = document.querySelector('.waiters-limit[data-gender="female"]');
+    
+    if (maleLimitElement && femaleLimitElement) {
+        const currentDay = getCurrentDayName();
+        const maleAssigned = document.querySelectorAll(`.male-waiters[data-day="${currentDay}"] .waiter-tag`).length;
+        const femaleAssigned = document.querySelectorAll(`.female-waiters[data-day="${currentDay}"] .waiter-tag`).length;
+        
+        maleLimitElement.textContent = `גברים (${maleAssigned}/${HALL_LIMITS[hallName][currentDay].male})`;
+        femaleLimitElement.textContent = `נשים (${femaleAssigned}/${HALL_LIMITS[hallName][currentDay].female})`;
+    }
+}
+
+function showHallSettings() {
+    const overlay = document.createElement('div');
+    overlay.className = 'settings-modal-overlay';
+    document.body.appendChild(overlay);
+
+    const dialog = document.createElement('div');
+    dialog.className = 'settings-modal';
+    dialog.innerHTML = `
+        <h3>הגדרות אולם ${hallName.replace('אולם-', '')}</h3>
+        <div class="settings-grid">
+            ${['יום ראשון', 'יום שני', 'יום שלישי', 'יום רביעי', 'יום חמישי'].map(day => `
+                <div class="day-settings">
+                    <div class="day-header">
+                        <h4>${day}</h4>
+                        <label class="active-toggle">
+                            <input type="checkbox" 
+                                   data-day="${day}" 
+                                   ${!HALL_LIMITS[hallName][day]?.inactive ? 'checked' : ''}>
+                            יום פעיל
+                        </label>
+                    </div>
+                    <div class="limits-container">
+                        <div class="limit-input">
+                            <label>מלצרים:</label>
+                            <input type="number" 
+                                   data-day="${day}" 
+                                   data-gender="male" 
+                                   value="${HALL_LIMITS[hallName][day]?.male || 0}"
+                                   min="0" max="20"
+                                   ${HALL_LIMITS[hallName][day]?.inactive ? 'disabled' : ''}>
+                        </div>
+                        <div class="limit-input">
+                            <label>מלצריות:</label>
+                            <input type="number" 
+                                   data-day="${day}" 
+                                   data-gender="female" 
+                                   value="${HALL_LIMITS[hallName][day]?.female || 0}"
+                                   min="0" max="20"
+                                   ${HALL_LIMITS[hallName][day]?.inactive ? 'disabled' : ''}>
+                        </div>
+                    </div>
+                </div>
+            `).join('')}
+        </div>
+        <div class="modal-buttons">
+            <button class="save-btn">שמור</button>
+            <button class="cancel-btn">ביטול</button>
+        </div>
+    `;
+
+    // הוספת ה-dialog ל-DOM - זו השורה החסרה!
+    document.body.appendChild(dialog);
+
+    // הוספת האזנה לשינוי סטטוס היום
+    dialog.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+        checkbox.addEventListener('change', (e) => {
+            const dayInputs = e.target.closest('.day-settings').querySelectorAll('input[type="number"]');
+            dayInputs.forEach(input => {
+                input.disabled = !e.target.checked;
+            });
+        });
+    });
+
+    // סגירת המודל
+    const closeModal = () => {
+        dialog.remove();
+        overlay.remove();
+    };
+
+    // הוספת האזנה לכפתורים
+    dialog.querySelector('.save-btn').addEventListener('click', async () => {
+        try {
+            const updates = {};
+            
+            dialog.querySelectorAll('.day-settings').forEach(daySection => {
+                const day = daySection.querySelector('input[type="checkbox"]').dataset.day;
+                const isActive = daySection.querySelector('input[type="checkbox"]').checked;
+                const dayKey = day.replace('יום ', '');
+                
+                const maleInput = daySection.querySelector('input[data-gender="male"]');
+                const femaleInput = daySection.querySelector('input[data-gender="female"]');
+                
+                updates[`halls/${hallName}/limits/${dayKey}`] = {
+                    male: parseInt(maleInput.value) || 0,
+                    female: parseInt(femaleInput.value) || 0,
+                    inactive: !isActive
+                };
+            });
+
+            await database.ref().update(updates);
+            showToast('ההגדרות נשמרו בהצלחה', 'success');
+            closeModal();
+        } catch (error) {
+            console.error('Error saving settings:', error);
+            showToast('אירעה שגיאה בשמירת ההגדרות', 'error');
+        }
+    });
+
+    dialog.querySelector('.cancel-btn').addEventListener('click', closeModal);
+    overlay.addEventListener('click', closeModal);
+}
+
+// עדכון פונקציית getCurrentDayName
+function getCurrentDayName() {
+    const days = {
+        0: 'יום ראשון',
+        1: 'יום שני',
+        2: 'יום שלישי',
+        3: 'יום רביעי',
+        4: 'יום חמישי',
+        5: 'יום שישי',
+        6: 'יום שבת'
+    };
+    return days[new Date().getDay()];
+}
+
+// פונקציה לטעינת ההגבלות מהפיירבייס
+async function loadHallLimits() {
+    try {
+        const limitsRef = database.ref(`halls/${hallName}/limits`);
+        
+        // טעינה ראשונית
+        const limitsSnapshot = await limitsRef.once('value');
+        const limits = limitsSnapshot.val() || {};
+        
+        // איתחול אובייקט ההגבלות לאולם הנוכחי
+        HALL_LIMITS[hallName] = {
+            'יום ראשון': { male: 10, female: 10 },
+            'יום שני': { male: 10, female: 10 },
+            'יום שלישי': { male: 10, female: 10 },
+            'יום רביעי': { male: 10, female: 10 },
+            'יום חמישי': { male: 10, female: 10 }
+        };
+
+        // עדכון ההגבלות מהפיירבייס
+        Object.entries(limits).forEach(([day, genderLimits]) => {
+            const fullDayName = `יום ${day}`;
+            if (HALL_LIMITS[hallName][fullDayName]) {
+                HALL_LIMITS[hallName][fullDayName] = genderLimits;
+            }
+        });
+
+        // האזנה לשינויים בזמן אמת
+        limitsRef.on('value', (snapshot) => {
+            const updatedLimits = snapshot.val() || {};
+            
+            // עדכון ההגבלות בזיכרון
+            Object.entries(updatedLimits).forEach(([day, genderLimits]) => {
+                const fullDayName = `יום ${day}`;
+                if (HALL_LIMITS[hallName][fullDayName]) {
+                    HALL_LIMITS[hallName][fullDayName] = genderLimits;
+                }
+            });
+
+            // עדכון הטבלה
+            loadWeeklySchedule();
+        });
+        
+    } catch (error) {
+        console.error('Error loading hall limits:', error);
+        showToast('אירעה שגיאה בטעינת ההגבלות', 'error');
+    }
 } 
