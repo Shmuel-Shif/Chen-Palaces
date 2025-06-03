@@ -19,5 +19,9 @@
       "type": "image/png",
       "purpose": "any maskable"
     }
+  ],
+  "offline_enabled": true,
+  "permissions": [
+    "storage"
   ]
 } 

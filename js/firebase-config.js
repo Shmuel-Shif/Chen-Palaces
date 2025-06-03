@@ -11,8 +11,24 @@ const firebaseConfig = {
 
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
+
+// יצירת התחברות לדאטהבייס
 const database = firebase.database();
+
+// בדיקת התחברות
+database.ref('.info/connected').on('value', (snap) => {
+    if (snap.val() === true) {
+        console.log('מחובר לדאטהבייס');
+    } else {
+        console.log('לא מחובר לדאטהבייס');
+    }
+});
 
 // רפרנסים לדאטהבייס
 const waitersRef = database.ref('waiters');
-const shiftsRef = database.ref('shifts'); 
+const shiftsRef = database.ref('shifts');
+
+// ייצוא לשימוש בקבצים אחרים
+window.database = database;
+window.waitersRef = waitersRef;
+window.shiftsRef = shiftsRef; 

@@ -1,0 +1,20 @@
+{
+  "rules": {
+    ".read": true,
+    ".write": true,
+    "shifts": {
+      ".read": true,
+      ".write": true,
+      ".indexOn": ["date", "hallName"]
+    },
+    "halls": {
+      ".read": true,
+      ".write": true
+    },
+    "waiters": {
+      ".read": true,
+      ".write": true,
+      ".indexOn": ["name"]
+    }
+  }
+} 

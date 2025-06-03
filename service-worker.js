@@ -1,4 +1,4 @@
-const CACHE_NAME = 'chen-palaces-cache-v2';
+const CACHE_NAME = 'chen-palaces-cache-v3';
 const urlsToCache = [
     './',
     './index.html',
@@ -26,15 +26,21 @@ self.addEventListener('install', event => {
     );
 });
 
-// שימוש בקבצים מה-cache
+// עדכון אסטרטגיית המטמון
 self.addEventListener('fetch', event => {
     event.respondWith(
-        caches.match(event.request)
+        // נסה קודם מהרשת
+        fetch(event.request)
             .then(response => {
-                if (response) {
-                    return response;
-                }
-                return fetch(event.request);
+                // אם הבקשה הצליחה, שמור במטמון ותחזיר את התשובה
+                const responseClone = response.clone();
+                caches.open(CACHE_NAME)
+                    .then(cache => cache.put(event.request, responseClone));
+                return response;
+            })
+            .catch(() => {
+                // אם נכשל, נסה מהמטמון
+                return caches.match(event.request);
             })
     );
 });
