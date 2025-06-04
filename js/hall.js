@@ -672,10 +672,15 @@ const connectWithRetry = (maxRetries = 3) => {
     let retryCount = 0;
 
     const tryConnect = () => {
-        database.ref('.info/connected').on('value', (snap) => {
+        database.ref('.info/connected').on('value', async (snap) => {
             if (snap.val() === true) {
                 console.log('מחובר לדאטהבייס');
-                loadWeeklySchedule();
+                await loadWeeklySchedule();
+                // מסתיר את ה-loader רק אחרי הטעינה הראשונית
+                const loader = document.getElementById('pageLoader');
+                if (loader) {
+                    loader.style.display = 'none';
+                }
             } else {
                 console.error('לא מחובר לדאטהבייס');
                 retryCount++;
@@ -687,9 +692,6 @@ const connectWithRetry = (maxRetries = 3) => {
                     showToast('בעיית התחברות לשרת. נא לרענן את הדף', 'error');
                 }
             }
-        }, (error) => {
-            console.error('שגיאת התחברות:', error);
-            showToast(`שגיאת התחברות: ${error.message}`, 'error');
         });
     };
 
@@ -697,11 +699,22 @@ const connectWithRetry = (maxRetries = 3) => {
 };
 
 // עדכון ה-DOMContentLoaded event
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     if (!firebase.apps.length) {
         console.error('Firebase לא מאותחל');
         return;
     }
+
+    // טעינת ההגבלות
+    await loadHallLimits();
+
+    // הצגת כפתור ההגדרות רק למנהל
+    const settingsBtn = document.getElementById('settingsBtn');
+    if (settingsBtn && currentUser.isAdmin) {
+        settingsBtn.style.display = 'inline-block';
+        settingsBtn.addEventListener('click', showHallSettings);
+    }
+
     connectWithRetry();
 });
 
@@ -919,7 +932,6 @@ function showHallSettings() {
         </div>
     `;
 
-    // הוספת ה-dialog ל-DOM - זו השורה החסרה!
     document.body.appendChild(dialog);
 
     // הוספת האזנה לשינוי סטטוס היום
@@ -946,19 +958,34 @@ function showHallSettings() {
             dialog.querySelectorAll('.day-settings').forEach(daySection => {
                 const day = daySection.querySelector('input[type="checkbox"]').dataset.day;
                 const isActive = daySection.querySelector('input[type="checkbox"]').checked;
-                const dayKey = day.replace('יום ', '');
                 
                 const maleInput = daySection.querySelector('input[data-gender="male"]');
                 const femaleInput = daySection.querySelector('input[data-gender="female"]');
                 
-                updates[`halls/${hallName}/limits/${dayKey}`] = {
-                    male: parseInt(maleInput.value) || 0,
-                    female: parseInt(femaleInput.value) || 0,
+                const maleValue = parseInt(maleInput.value) || 0;
+                const femaleValue = parseInt(femaleInput.value) || 0;
+
+                // עדכון ה-HALL_LIMITS המקומי
+                HALL_LIMITS[hallName][day] = {
+                    male: maleValue,
+                    female: femaleValue,
+                    inactive: !isActive
+                };
+
+                // הכנת העדכון ל-Firebase
+                updates[`halls/${hallName}/limits/${day}`] = {
+                    male: maleValue,
+                    female: femaleValue,
                     inactive: !isActive
                 };
             });
 
+            // שמירה ב-Firebase
             await database.ref().update(updates);
+            
+            // רענון התצוגה
+            await loadWeeklySchedule();
+            
             showToast('ההגדרות נשמרו בהצלחה', 'success');
             closeModal();
         } catch (error) {
@@ -989,44 +1016,26 @@ function getCurrentDayName() {
 async function loadHallLimits() {
     try {
         const limitsRef = database.ref(`halls/${hallName}/limits`);
-        
-        // טעינה ראשונית
-        const limitsSnapshot = await limitsRef.once('value');
-        const limits = limitsSnapshot.val() || {};
-        
+        const snapshot = await limitsRef.once('value');
+        const limits = snapshot.val() || {};
+
         // איתחול אובייקט ההגבלות לאולם הנוכחי
         HALL_LIMITS[hallName] = {
-            'יום ראשון': { male: 10, female: 10 },
-            'יום שני': { male: 10, female: 10 },
-            'יום שלישי': { male: 10, female: 10 },
-            'יום רביעי': { male: 10, female: 10 },
-            'יום חמישי': { male: 10, female: 10 }
+            'יום ראשון': limits['יום ראשון'] || { male: 10, female: 10 },
+            'יום שני': limits['יום שני'] || { male: 10, female: 10 },
+            'יום שלישי': limits['יום שלישי'] || { male: 10, female: 10 },
+            'יום רביעי': limits['יום רביעי'] || { male: 10, female: 10 },
+            'יום חמישי': limits['יום חמישי'] || { male: 10, female: 10 }
         };
-
-        // עדכון ההגבלות מהפיירבייס
-        Object.entries(limits).forEach(([day, genderLimits]) => {
-            const fullDayName = `יום ${day}`;
-            if (HALL_LIMITS[hallName][fullDayName]) {
-                HALL_LIMITS[hallName][fullDayName] = genderLimits;
-            }
-        });
 
         // האזנה לשינויים בזמן אמת
         limitsRef.on('value', (snapshot) => {
             const updatedLimits = snapshot.val() || {};
-            
-            // עדכון ההגבלות בזיכרון
-            Object.entries(updatedLimits).forEach(([day, genderLimits]) => {
-                const fullDayName = `יום ${day}`;
-                if (HALL_LIMITS[hallName][fullDayName]) {
-                    HALL_LIMITS[hallName][fullDayName] = genderLimits;
-                }
+            Object.keys(HALL_LIMITS[hallName]).forEach(day => {
+                HALL_LIMITS[hallName][day] = updatedLimits[day] || HALL_LIMITS[hallName][day];
             });
-
-            // עדכון הטבלה
             loadWeeklySchedule();
         });
-        
     } catch (error) {
         console.error('Error loading hall limits:', error);
         showToast('אירעה שגיאה בטעינת ההגבלות', 'error');
