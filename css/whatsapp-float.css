@@ -1,16 +1,16 @@
 /* WhatsApp Float Button */
 .whatsapp-float {
     position: fixed;
-    width: 60px;
-    height: 60px;
-    bottom: 40px;
-    left: 40px;
+    width: 50px;
+    height: 50px;
+    bottom: 50%;
+    left: -3px;
     background-color: #25d366;
     color: #FFF;
-    border-radius: 50px;
+    border-radius: 0  50px 50px 0;
     text-align: center;
     font-size: 30px;
-    box-shadow: 2px 2px 3px #999;
+    box-shadow: 2px 2px 3px #0000005e;
     z-index: 100;
     display: flex;
     align-items: center;
@@ -30,12 +30,23 @@
 }
 
 /* התאמה למובייל */
-@media screen and (max-width: 767px) {
+@media screen and (max-width: 768px) {
     .whatsapp-float {
         width: 50px;
         height: 50px;
-        bottom: 20px;
-        left: 20px;
+        bottom: 50%;
+        left: -3px;
         font-size: 25px;
     }
-} 
+
+    #logoutBtn {
+        padding: 0;
+    }
+
+    #printSalaryBtn {
+        padding: 0;
+        margin-right: 0;
+        margin-left: 0;
+        top: 20px;
+    }
+}

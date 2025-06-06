@@ -1791,18 +1791,26 @@ select:hover {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(255, 255, 255, 0.95);
+    background-color: #c0bbb9;
+    background-image: 
+        linear-gradient(30deg, rgba(93, 64, 55, 0.3) 12%, transparent 12.5%, transparent 87%, rgba(93, 64, 55, 0.3) 87.5%, rgba(93, 64, 55, 0.3)),
+        linear-gradient(30deg, rgba(93, 64, 55, 0.3) 12%, transparent 12.5%, transparent 87%, rgba(93, 64, 55, 0.3) 87.5%, rgba(93, 64, 55, 0.3)),
+        linear-gradient(150deg, rgba(93, 64, 55, 0.3) 12%, transparent 12.5%, transparent 87%, rgba(93, 64, 55, 0.3) 87.5%, rgba(93, 64, 55, 0.3)),
+        linear-gradient(30deg, rgba(93, 64, 55, 0.3) 12%, transparent 12.5%, transparent 87%, rgba(93, 64, 55, 0.3) 87.5%, rgba(93, 64, 55, 0.3)),
+        linear-gradient(30deg, rgba(93, 64, 55, 0.3) 12%, transparent 12.5%, transparent 87%, rgba(93, 64, 55, 0.3) 87.5%, rgba(93, 64, 55, 0.3)),
+        linear-gradient(150deg, rgba(93, 64, 55, 0.3) 12%, transparent 12.5%, transparent 87%, rgba(93, 64, 55, 0.3) 87.5%, rgba(93, 64, 55, 0.3));
+    background-size: 160px 280px;
+    background-position: 0 0, 0 0, 80px 140px, 80px 140px;
     display: flex;
     justify-content: center;
     align-items: center;
     z-index: 9999;
-    flex-direction: column;
-    gap: 20px;
+    gap: 3px;
 }
 
 .loader {
-    width: 60px;
-    height: 60px;
+    width: 50px;
+    height: 50px;
     position: relative;
     animation: pulse 1.5s ease-in-out infinite;
 }
@@ -1811,8 +1819,10 @@ select:hover {
     width: 100%;
     height: 100%;
     object-fit: contain;
-    max-width: 60px;
-    max-height: 60px;
+    max-width: 100px;
+    max-height: 100px;
+    border-radius: 50%;
+    animation: bounce 1.5s ease-in-out infinite;
 }
 
 .loader-text {
@@ -1822,19 +1832,24 @@ select:hover {
     text-align: center;
 }
 
-@keyframes pulse {
-    0% {
-        transform: scale(1);
-        opacity: 1;
+@keyframes bounce {
+    0%, 100% {
+        transform: translateY(0);
     }
     50% {
-        transform: scale(1.1);
-        opacity: 0.8;
+        transform: translateY(-30px);
     }
-    100% {
-        transform: scale(1);
-        opacity: 1;
-    }
+}
+
+/* אפקט מדורג בין העיגולים */
+.loader:nth-child(1) img {
+    animation-delay: 0s;
+}
+.loader:nth-child(2) img {
+    animation-delay: 0.2s;
+}
+.loader:nth-child(3) img {
+    animation-delay: 0.4s;
 }
 
 .waiter-controls {
@@ -2026,13 +2041,13 @@ body.modal-open::after {
 /* WhatsApp Float Button */
 .whatsapp-float {
     position: fixed;
-    width: 60px;
-    height: 60px;
-    bottom: 40px;
-    left: 40px;
+    width: 50px;
+    height: 50px;
+    bottom: 50%;
+    left: -3px;
+    border-radius: 0  50px 50px 0;
     background-color: #25d366;
     color: #FFF;
-    border-radius: 50px;
     text-align: center;
     font-size: 30px;
     box-shadow: 2px 2px 3px #000000;
@@ -2059,8 +2074,8 @@ body.modal-open::after {
     .whatsapp-float {
         width: 50px;
         height: 50px;
-        bottom: 20px;
-        left: 20px;
+        bottom: 50%;
+        left: -3px;
         font-size: 25px;
     }
 
