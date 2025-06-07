@@ -5,7 +5,7 @@
   "start_url": "/harmonot-chen/",
   "display": "standalone",
   "background_color": "#3E2723",
-  "theme_color": "#4CAF50",
+  "theme_color": "#5D4037",
   "icons": [
     {
       "src": "./images/icon-192.png",
